@@ -13,8 +13,9 @@ job_test:
 job_deploy:
   stage: deploy
   script:
+    - ssh-keygen -R pysakki.com
     - ssh-keygen -t rsa -b 4096 -C '' -f ~/.ssh/deploy_rsa
-    - ssh-keyscan -H pysakki.com >> ~/.ssh/known_hosts
+#    - ssh-keyscan -H pysakki.com >> ~/.ssh/known_hosts
     - ssh-copy-id -i ~/.ssh/deploy_rsa.pub petarjr@pysakki.com
     - rsync -avuz -e 'ssh -i ~/.ssh/deploy_rsa.pub -oHostKeyAlgorithms=+ssh-dss' $CI_PROJECT_DIR/public_html/ petarjr@pysakki.com:html/site-isokissa/kapsula
   #only:
