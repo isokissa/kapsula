@@ -15,5 +15,5 @@ job_deploy:
     - ssh-keyscan -H pysakki.com >> ~/.ssh/known_hosts
     - ssh-copy-id -i ~/.ssh/deploy_rsa.pub petarjr@pysakki.com
     - rsync -avuz -e 'ssh -i ~/.ssh/deploy_rsa.pub -oHostKeyAlgorithms=+ssh-dss' $CI_PROJECT_DIR/public_html/ petarjr@pysakki.com:html/site-isokissa/kapsula
-  only:
-    - master
+  #only:
+  #  - master
