@@ -13,7 +13,6 @@ job_test:
 job_deploy:
   stage: deploy
   script:
-    - ssh-keygen -R pysakki.com
     - ssh-keygen -t rsa -F pysakki.com -H -f ~/.ssh/deploy_rsa
 #    - ssh-keyscan -H pysakki.com >> ~/.ssh/known_hosts
     - ssh-copy-id -i ~/.ssh/deploy_rsa -o HostKeyAlgorithms=+ssh-dss petarjr@pysakki.com
