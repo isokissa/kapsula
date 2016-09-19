@@ -13,9 +13,26 @@ job_test:
 job_deploy:
   stage: deploy
   script:
-    - ssh-keygen -t rsa -F pysakki.com -H -f ~/.ssh/deploy_rsa.pub
-#    - ssh-keyscan -H pysakki.com >> ~/.ssh/known_hosts
-    - ssh-copy-id -i ~/.ssh/deploy_rsa -o HostKeyAlgorithms=+ssh-dss petarjr@pysakki.com
-    - rsync -avuz -e 'ssh -i ~/.ssh/deploy_rsa.pub -oHostKeyAlgorithms=+ssh-dss' $CI_PROJECT_DIR/public_html/ petarjr@pysakki.com:html/site-isokissa/kapsula
+    # Install ssh-agent if not already installed, it is required by Docker.
+    # (change apt-get to yum if you use a CentOS-based image)
+    - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
+
+    # Run ssh-agent (inside the build environment)
+    - eval $(ssh-agent -s)
+
+    # Add the SSH key stored in SSH_PRIVATE_KEY variable to the agent store
+    - ssh-add <(echo "$SSH_PRIVATE_KEY")
+
+    # For Docker builds disable host key checking. Be aware that by adding that
+    # you are suspectible to man-in-the-middle attacks.
+    # WARNING: Use this only with the Docker executor, if you use it with shell
+    # you will overwrite your user's SSH config.
+    - mkdir -p ~/.ssh
+    - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+  
+    - rsync -avz -e "ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -oHostKeyAlgorithms=+ssh-dss" --progress public_html/ petarjr@pysakki.com:html/site-isokissa/kapsula/
+
+  
+  
   #only:
   #  - master
