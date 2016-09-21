@@ -1,0 +1,27 @@
+{
+  "name": "kapsula",
+  "version": "1.0.0",
+  "description": "My legendary game, originally written for Sinclair ZX81 with 1K",
+  "keywords": [
+    "kapsula",
+    "game",
+    "simple",
+    "browser"
+  ],
+  "author": "isokissa",
+  "license": "(MIT OR Apache-2.0)",
+  "repository": "gitlab:alonano/kapsula",
+  "scripts": {
+    "test": "gulp test"
+  },
+  "contributors": [],
+  "dependencies": {},
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-jasmine": "^2.4.1",
+    "jasmine": "^2.5.1",
+    "jasmine-core": "^2.5.1",
+    "jasmine-node": "^1.14.5",
+    "mocha": "^3.0.2"
+  }
+}
