@@ -6,9 +6,6 @@ job_test:
   script: 
     - npm install
     - npm test
-  only: 
-    - master
-
 
 job_deploy:
   stage: deploy
@@ -33,7 +30,5 @@ job_deploy:
   
     - rsync -avz -e "ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" --progress public_html/ petarjr@pysakki.com:html/site-isokissa/kapsula/
 
-  
-  
-  #only:
-  #  - master
+  only: 
+    - master
