@@ -31,7 +31,7 @@ job_deploy:
     - mkdir -p ~/.ssh
     - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
   
-    - rsync -avz -e "ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -oHostKeyAlgorithms=+ssh-dss" --progress public_html/ petarjr@pysakki.com:html/site-isokissa/kapsula/
+    - rsync -avz -e "ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" --progress public_html/ petarjr@pysakki.com:html/site-isokissa/kapsula/
 
   
   
