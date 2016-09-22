@@ -1,11 +1,17 @@
 $(document).ready( function() {
 
-    var windowWidth = $(document).width();
-    var windowHeight = $(document).height();
-
-    var myLine = document.getElementById("myLine");
-    myLine.setAttribute( "x2", windowWidth );
-    myLine.setAttribute( "y2", windowHeight );
+    var myRect = document.getElementById("myRect");
+    
+    var x = 0;
+    
+    setInterval( () => {
+        myRect.setAttribute("x", x);
+        x += 8;
+        if( x >= 256 ){
+            x = 0;
+        }        
+    }, 200 );
+    
 
 });
 
