@@ -12,7 +12,7 @@ describe("StepGame", () => {
         it("succeeds", () => {
 
             var sg = new StepGame();
-            var gd = new GameDrivers();
+            var gd = new GameDriver();
         });
     });
   
