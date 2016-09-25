@@ -2,12 +2,19 @@
  * (c) 2016 isokissa
  */
 
-describe("StepGame test suite", function() {
+
+require( "../public_html/js/kapsula");
+
+
+describe("StepGame", () => {
     
-    
-  it("Create StepGame - Succeeds", function() {
-    expect(true).toBe(true);
-  });
+    describe("when constructed", () => {
+        it("succeeds", () => {
+
+            var sg = new StepGame();
+            var gd = new GameDrivers();
+        });
+    });
   
   
 });
