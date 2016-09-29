@@ -4,7 +4,7 @@ $(document).ready( function() {
     
     var x = 0;
     
-    setInterval( () => {
+    setInterval( function() {
         myRect.setAttribute("x", x);
         x += 8;
         if( x >= 256 ){
