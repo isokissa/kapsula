@@ -1,8 +1,9 @@
 /**
  * 
- * @returns {KapsulaStepGame}
  */
 
+
+// KapsulaStepGame
 
 KapsulaStepGame = function( aRandomizer ) {
     if( aRandomizer === undefined ){
@@ -14,18 +15,31 @@ KapsulaStepGame = function( aRandomizer ) {
     this.randomizer = aRandomizer;   
 };
 
-KapsulaStepGame.prototype.advance = function (){
-    this.randomizer.getNextRandomNumber();
+KapsulaStepGame.prototype.MAX_ROW = 24;
+KapsulaStepGame.prototype.MAX_COLUMNS = 32;
+
+KapsulaStepGame.prototype.advance = function(aUserInput){
+    if( aUserInput === undefined ){
+        throw new InvalidParameterError("missing user input");
+    }
+    var a = this.randomizer.getRandomNumber( 2 * (this.MAX_ROWS-2) );
+    return { state: "FLYING", row: a, column: 0 };
 };
 
+// Randomizer 
+
 Randomizer = function() {
-    
-}
+};
 
-Randomizer.prototype.getNextRandomNumber = function() {
-    return 0;
-}
+Randomizer.prototype.getRandomNumber = function(aUpperLimit) {
+    if( aUpperLimit === undefined ){
+        throw new InvalidParameterError( "no upper limit given to Randomizer" );
+    }
+    return 15;
+};
 
+
+// InvalidParameterError
 
 InvalidParameterError = function(message) {
     this.name = 'InvalidParameterError';
