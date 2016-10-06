@@ -28,38 +28,71 @@ describe("KapsulaStepGame", function() {
             var randomizer = new TestRandomizer();
             var dummy = new KapsulaStepGame( randomizer );
         })
+        
+        it("sets the score to zero", function() {
+            var kapsulaStepGame = new KapsulaStepGame( new TestRandomizer ); 
+            expect( kapsulaStepGame.getScore() ).toEqual( 0 );
+        })
     });
     
     describe("invoking advance", function() {
         var game; 
         var randomizer; 
+        var ROW = 14;
+        var NO_INPUT = 0; 
         
         beforeEach(function() {
             randomizer = new TestRandomizer();
             game = new KapsulaStepGame(randomizer);
         });
 
-        it("complains if no user input is given", function() {
+        it("throws exception if no user input is given", function() {
             var testBlock = function(){
                 game.advance();
             };
             expect( testBlock ).toThrowError( InvalidParameterError, "missing user input" );            
         });
+        
+        var advanceManyTimesWithNoInput = function( howManyTimes, fromLeft ) {
+            randomizer.setNextNumberSequence( [ROW, (fromLeft? 0: 1)] );
+            var lastResult; 
+            for( var i = 0; i < howManyTimes; i++ ){
+                lastResult = game.advance(NO_INPUT);
+            }
+            return lastResult;
+        }
 
-        it("first time also invokes the randomizer to get the starting position of first kapsula", function() {
+        it("first time also invokes the randomizer twice to get the starting position and direction of first kapsula", function() {
             spyOn( randomizer, "getRandomNumber" );
-            game.advance(0);
-            expect( randomizer.getRandomNumber ).toHaveBeenCalledTimes(1);
+            game.advance(NO_INPUT);
+            expect( randomizer.getRandomNumber ).toHaveBeenCalledTimes(2);
+            expect( randomizer.getRandomNumber ).toHaveBeenCalledWith(23);
+            expect( randomizer.getRandomNumber ).toHaveBeenCalledWith(2);
         });
       
-        it("first time returns the FLYING object at position (0,15)", function() {
-            var ROW = 15;
-            randomizer.setNextNumber(ROW);
-            randomizer.getRandomNumber(22);
-            var stateChanges = game.advance(0);
-            expect( stateChanges ).toEqual( {state:"FLYING", row:ROW, column:0} );
+        it("first time returns the FLYING object at position (0,14) if generated numbers are 14 and 0", function() {
+            expect( advanceManyTimesWithNoInput(1, true) ).toEqual( {state:"FLYING", row:ROW, column:0} );
         })
 
+        it("first time returns the FLYING object coming from the right side (column 31)", function() {
+            expect( advanceManyTimesWithNoInput(1, false) ).toEqual( {state:"FLYING", row:ROW, column:31} );
+        })
+
+        
+        it("second time returns the FLYING object at position (1,14)", function() {
+            expect( advanceManyTimesWithNoInput(2, true) ).toEqual( {state:"FLYING", row:ROW, column:1} );
+        })
+
+        it("second time returns the FLYING object at position (30,14), if started from the right side", function() {
+            expect( advanceManyTimesWithNoInput(2, false) ).toEqual( {state:"FLYING", row:ROW, column:30} );
+        })
+        
+        it("returns status LOST if advance is done 33 times from left, without user input", function(){
+            expect( advanceManyTimesWithNoInput( game.MAX_COLUMNS + 1, true ) ).toEqual( {state: "LOST", row: undefined, column: undefined } );
+        })
+
+        
+        
     });
       
 });
@@ -77,16 +110,17 @@ describe("Randomizer", function() {
 
 var TestRandomizer = function TestRandomizer(){
     Randomizer.apply(this, arguments);
-    this.nextNumber = 15; 
+    this.nextNumberSequence = [1,1,1,1]; 
 };
 
 TestRandomizer.prototype = Object.create( Randomizer.prototype );
 TestRandomizer.prototype.constructor = TestRandomizer;
 
-TestRandomizer.prototype.getRandomNumber = function(dummy) {
-    return this.nextNumber;
+TestRandomizer.prototype.getRandomNumber = function(aLimit) {
+    var nextNumber = this.nextNumberSequence.shift();
+    return nextNumber % aLimit;
 };
 
-TestRandomizer.prototype.setNextNumber = function(aNextNumber) {
-    this.nextNumber = aNextNumber; 
+TestRandomizer.prototype.setNextNumberSequence = function(aNextNumberSequence) {
+    this.nextNumberSequence = aNextNumberSequence; 
 };
