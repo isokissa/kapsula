@@ -2,8 +2,9 @@
  * 
  */
 
-
+/////////////////////////////////////
 // KapsulaStepGame
+/////////////////////////////////////
 
 KapsulaStepGame = function( aRandomizer ) {
     if( aRandomizer === undefined ){
@@ -56,7 +57,9 @@ KapsulaStepGame.prototype.generateNewKapsula = function() {
     }
 };
 
+/////////////////////////////////
 // Randomizer 
+/////////////////////////////////
 
 Randomizer = function() {
 };
@@ -65,10 +68,42 @@ Randomizer.prototype.getRandomNumber = function(aUpperLimitOpen) {
     if( aUpperLimitOpen === undefined ){
         throw new InvalidParameterError( "no upper limit given to Randomizer" );
     }
-    return 15;
+    if( aUpperLimitOpen < 2 ){
+        throw new InvalidParameterError( "upper limit must be bigger than 1" );
+    }
+    return Math.floor( Math.random() * aUpperLimitOpen );
 };
 
+////////////////////////////////
+// KapsulaArcadeGame
+////////////////////////////////
+
+KapsulaArcadeGame = function( aKapsulaStepGame, aTimeoutFunction, aRendererFunction ) {
+    if( !(aKapsulaStepGame instanceof KapsulaStepGame) ){
+        throw new InvalidParameterError( "StepGame is not given" );
+    }
+    this.kapsulaStepGame = aKapsulaStepGame; 
+    if( !(aTimeoutFunction instanceof Function )){
+        throw new InvalidParameterError( "Timeout function is not given" );
+    }
+    this.timeoutFunction = aTimeoutFunction; 
+    if( !(aRendererFunction instanceof Function )){
+        throw new InvalidParameterError( "Renderer function is not given" );
+    }
+    this.rendererFunction = aRendererFunction; 
+};
+
+KapsulaArcadeGame.prototype.startLoop = function() {
+    this.timeoutFunction( this.step, 100 );
+};
+
+KapsulaArcadeGame.prototype.step = function() {
+    
+}
+
+////////////////////////////////
 // InvalidParameterError
+////////////////////////////////
 
 InvalidParameterError = function(message) {
     this.name = 'InvalidParameterError';

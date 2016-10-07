@@ -2,15 +2,12 @@ $(document).ready( function() {
 
     var myRect = document.getElementById("myRect");
     
-    var x = 0;
     
-    setInterval( function() {
-        myRect.setAttribute("x", x);
-        x += 8;
-        if( x >= 256 ){
-            x = 0;
-        }        
-    }, 200 );
+    var randomizer = new Randomizer();
+    var stepGame = new KapsulaStepGame( randomizer );
+    var arcadeGame = new KapsulaArcadeGame( stepGame, window.setTimeout, undefined );
+    
+    arcadeGame.loop();
     
 });
 

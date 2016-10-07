@@ -87,17 +87,20 @@ describe("KapsulaStepGame", function() {
             expect( advanceManyTimesWithNoInput(2, false) ).toEqual( {state:"FLYING", row:ROW, column:30} );
         })
         
+        it("moves the object 15 steps when advanced 15 times", function() {
+            expect( advanceManyTimesWithNoInput( 15, true ) ).toEqual( {state:"FLYING", row:ROW, column:14 } );
+        });
+        
         it("returns status LOST if advance is done 33 times from left, without user input", function(){
             expect( advanceManyTimesWithNoInput( game.MAX_COLUMNS + 1, true ) ).toEqual( {state: "LOST", row: undefined, column: undefined } );
-        })
+        });
 
-        
-        
     });
       
 });
 
 describe("Randomizer", function() {
+    
     it("throws exception if no upper limit is given in getRandomNumber", function() {
         var randomizer = new Randomizer();
         var testBlock = function(){
@@ -105,8 +108,17 @@ describe("Randomizer", function() {
         };
         expect( testBlock ).toThrowError( InvalidParameterError, "no upper limit given to Randomizer" );
     })
+    
+    it("throws exception if upper limit is less than 2", function() {
+        var randomizer = new Randomizer();
+        var testBlock = function(){
+            var a = randomizer.getRandomNumber( 1 );
+        };
+        expect( testBlock ).toThrowError( InvalidParameterError, "upper limit must be bigger than 1" );
+    })
 })
 
+///////////////////////
 
 var TestRandomizer = function TestRandomizer(){
     Randomizer.apply(this, arguments);
