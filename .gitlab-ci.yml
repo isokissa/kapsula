@@ -32,3 +32,6 @@ job_deploy:
 
   only: 
     - master
+  environment:
+    name: kapsula.isokissa.org
+    url: http://kapsula.isokissa.org/
