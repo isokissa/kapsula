@@ -12,11 +12,11 @@ describe("GameRunner", function() {
   
     describe("when constructed", function() {
                 
-        it("accepts arcade game object, timer function and renderer function", function() {
+        it("accepts arcade game object, timer function, renderer function and current time function", function() {
             var arcadeGame = new ArcadeGame();
             var timeoutFunction = function() {};
-            var renderer = function() {};
-            var dummy = new GameRunner( arcadeGame, timeoutFunction, renderer );
+            var rendererFunction = function() {};
+            var dummy = new GameRunner( arcadeGame, timeoutFunction, rendererFunction );
         });
         
         it("throws exception if arcade game is not given or is of wrong type", function() {
@@ -43,10 +43,9 @@ describe("GameRunner", function() {
             expect( testBlock ).toThrowError( InvalidParameterError, "Renderer function is not given" );
         });
         
-        
     });
     
-    describe("when invoking loop", function() {
+    describe("when invoking startLoop", function() {
         var arcadeGame;
         var testTimeout; 
         var testRenderer; 
@@ -62,34 +61,52 @@ describe("GameRunner", function() {
         it("invokes timeout with step method", function() {
             spyOn( gameRunner, "timeoutFunction" );
             gameRunner.startLoop();
-            expect( gameRunner.timeoutFunction ).toHaveBeenCalledWith( gameRunner.step, 100 );
+            expect( gameRunner.timeoutFunction ).toHaveBeenCalled();
         });
+        
+        it("invokes timeout second time with 150ms", function() {
+            gameRunner.startLoop();
+            expect( ArcadeGame.howManyMillisecondsToWait ).toEqual( 150 );
+        });
+        
+        it("invokes GameRuner step() method", function() {
+            spyOn( gameRunner, "step" );
+            gameRunner.startLoop();
+            expect( gameRunner.step ).toHaveBeenCalled();
+        })
+        
+        it("invokes arcadeGame advance() method", function() {
+            spyOn( gameRunner.arcadeGame, "advance" );
+            gameRunner.startLoop();
+            expect( gameRunner.arcadeGame.advance ).toHaveBeenCalled();
+        });
+        
     });
     
-    
 });
-    
+       
 ////////////////////////////////////
 // spies
 ////////////////////////////////////
 
 var TestTimeout = function(){
+    this.howManyTimesBeforeEnd = 10;
 };
 
 TestTimeout.prototype.setTimeout = function( f, t ) {
-    console.log("pozvao ga je");
+    if( this.howManyTimesBeforeEnd > 0 ){
+        f();
+        this.howManyTimesBeforeEnd--;
+    }
 };
 
-
-
 var TestArcadeGame = function(){
+    ArcadeGame.call(this);
 };
 
 TestArcadeGame.prototype = Object.create( ArcadeGame.prototype );
 TestArcadeGame.prototype.constructor = TestArcadeGame;
 
-TestArcadeGame.prototype.getRandomNumber = function(aLimit) {
-    return 0;
+TestArcadeGame.prototype.advance = function() {
+    ArcadeGame.howManyMillisecondsToWait = 150;
 };
-
-

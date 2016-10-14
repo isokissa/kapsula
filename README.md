@@ -29,9 +29,25 @@ of time. It can be used to implement also normal board games.
 Class `KapsulaArcadeGame` brings the timing aspect to the game, and takes care
 of performing different animations in order to represent the states of the game. 
 `KapsulaArcadeGame` also extends the state of game objects and introduces different
-transition states, that are fun and interesting to see, but are irrelevant for 
+transition states, that are fun and interesting to see, but are irrelevant for
 game logic and `KapsulaStepGame`. 
 
 Class `KapsulaGameRenderer` is the class invoked by `KapsulaArcadeGame` and it 
 takes care of representing the arcade game states in HTML, or more precisely in 
 SVG (Scalable Vector Graphics) element of the main HTML page. 
+
+Gengine - minimal game engine
+----------------------------
+
+H3: The Testing Aspect 
+
+GameRunner is the only class that has notion of time, and it has also the 
+infinite loop inside, which makes it a bit more interesting to test automatically. 
+In order to test the infinite loop, of course we have to make sure that we can 
+control the exit criteria, which means that the loop actually must not be infinite. 
+
+There will be the method startLoop(), but also the endLoop(). In unit test
+we will make sure that startLoop actually gets executed controlled number of times
+and then stimulate the endLoop() method to regularly complete the test. 
+
+

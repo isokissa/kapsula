@@ -22,13 +22,21 @@ GameRunner = function( aArcadeGame, aTimeoutFunction, aRendererFunction ) {
 };
 
 GameRunner.prototype.startLoop = function() {
-    this.timeoutFunction( this.step, 100 );
+    this.step( this.arcadeGame.advance );
 };
 
-GameRunner.prototype.step = function() {
-    
+GameRunner.prototype.step = function( advanceFunction ) {
+    advanceFunction();
+    var that = this; 
+    this.timeoutFunction( function() {
+        that.step( that.arcadeGame.advance );
+    }, this.arcadeGame.howManyMillisecondsToWait );   
 }
 
 ArcadeGame = function() {
-    
+    this.howManyMillisecondsToWait = 100;
+};
+
+ArcadeGame.prototype.advance = function() {
+    console.log( "do I know about " + this.howManyMillisecondsToWait );
 };
