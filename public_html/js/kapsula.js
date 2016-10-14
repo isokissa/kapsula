@@ -78,19 +78,11 @@ Randomizer.prototype.getRandomNumber = function(aUpperLimitOpen) {
 // KapsulaArcadeGame
 ////////////////////////////////
 
-KapsulaArcadeGame = function( aKapsulaStepGame, aTimeoutFunction, aRendererFunction ) {
+KapsulaArcadeGame = function( aKapsulaStepGame ) {
     if( !(aKapsulaStepGame instanceof KapsulaStepGame) ){
         throw new InvalidParameterError( "StepGame is not given" );
     }
     this.kapsulaStepGame = aKapsulaStepGame; 
-    if( !(aTimeoutFunction instanceof Function )){
-        throw new InvalidParameterError( "Timeout function is not given" );
-    }
-    this.timeoutFunction = aTimeoutFunction; 
-    if( !(aRendererFunction instanceof Function )){
-        throw new InvalidParameterError( "Renderer function is not given" );
-    }
-    this.rendererFunction = aRendererFunction; 
 };
 
 KapsulaArcadeGame.prototype.startLoop = function() {
