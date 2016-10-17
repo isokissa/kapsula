@@ -39,7 +39,8 @@ describe("KapsulaStepGame", function() {
         var game; 
         var randomizer; 
         var ROW = 14;
-        var NO_INPUT = 0; 
+        var NO_INPUT = false;
+        var YES_INPUT = true;
         
         beforeEach(function() {
             randomizer = new TestRandomizer();
@@ -60,7 +61,7 @@ describe("KapsulaStepGame", function() {
                 lastResult = game.advance(NO_INPUT);
             }
             return lastResult;
-        }
+        };
 
         it("first time also invokes the randomizer twice to get the starting position and direction of first kapsula", function() {
             spyOn( randomizer, "getRandomNumber" );
@@ -70,30 +71,100 @@ describe("KapsulaStepGame", function() {
             expect( randomizer.getRandomNumber ).toHaveBeenCalledWith(2);
         });
       
-        it("first time returns the FLYING object at position (0,14) if generated numbers are 14 and 0", function() {
-            expect( advanceManyTimesWithNoInput(1, true) ).toEqual( {state:"FLYING", row:ROW, column:0} );
+        it("first time returns the FLYING_FROM_LEFT object at position (0,14) if generated numbers are 14 and 0", function() {
+            expect( advanceManyTimesWithNoInput(1, true) ).toEqual( {state:game.STATE.FLYING_FROM_LEFT, row:ROW, column:0} );
         })
 
-        it("first time returns the FLYING object coming from the right side (column 31)", function() {
-            expect( advanceManyTimesWithNoInput(1, false) ).toEqual( {state:"FLYING", row:ROW, column:31} );
+        it("first time returns the FLYING_FROM_RIGHT object coming from the right side (column 31)", function() {
+            expect( advanceManyTimesWithNoInput(1, false) ).toEqual( {state:game.STATE.FLYING_FROM_RIGHT, row:ROW, column:31} );
         })
 
-        
         it("second time returns the FLYING object at position (1,14)", function() {
-            expect( advanceManyTimesWithNoInput(2, true) ).toEqual( {state:"FLYING", row:ROW, column:1} );
+            expect( advanceManyTimesWithNoInput(2, true) ).toEqual( {state:game.STATE.FLYING_FROM_LEFT, row:ROW, column:1} );
         })
 
         it("second time returns the FLYING object at position (30,14), if started from the right side", function() {
-            expect( advanceManyTimesWithNoInput(2, false) ).toEqual( {state:"FLYING", row:ROW, column:30} );
+            expect( advanceManyTimesWithNoInput(2, false) ).toEqual( {state:game.STATE.FLYING_FROM_RIGHT, row:ROW, column:30} );
         })
         
         it("moves the object 15 steps when advanced 15 times", function() {
-            expect( advanceManyTimesWithNoInput( 15, true ) ).toEqual( {state:"FLYING", row:ROW, column:14 } );
+            expect( advanceManyTimesWithNoInput( 15, true ) ).toEqual( {state:game.STATE.FLYING_FROM_LEFT, row:ROW, column:14 } );
+        });
+
+        describe("if kapsula leaves the screen", function() {
+            
+            it("returns status LOST if advance is done 33 times from left, without user input", function(){
+                expect( advanceManyTimesWithNoInput( game.MAX_COLUMNS + 1, true ) ).toEqual( {state: game.STATE.LOST, row: undefined, column: undefined } );
+            });
+
+            it("returns status LOST if advance is done 33 times from right, without user input", function(){
+                expect( advanceManyTimesWithNoInput( game.MAX_COLUMNS + 1, false ) ).toEqual( {state: game.STATE.LOST, row: undefined, column: undefined } );
+            });        
+
+            it("creates new kapsula after the previous one is lost", function() {
+                advanceManyTimesWithNoInput( game.MAX_COLUMNS + 1, true );
+                expect( advanceManyTimesWithNoInput( 1, true ) ).toEqual( {state:game.STATE.FLYING_FROM_LEFT, row:ROW, column:0} );
+            });
+
+            it("may create new kapsula on the other side after the previous one is lost", function() {
+                advanceManyTimesWithNoInput( game.MAX_COLUMNS + 1, true );
+                expect( advanceManyTimesWithNoInput( 1, false ) ).toEqual( {state:game.STATE.FLYING_FROM_RIGHT, row:ROW, column:31} );
+            });
+            
+            it("keeps the score at zero", function() {
+                advanceManyTimesWithNoInput( game.MAX_COLUMNS + 1, true );
+                expect( advanceManyTimesWithNoInput( 1, true ) ).toEqual( {state:game.STATE.FLYING_FROM_LEFT, row:ROW, column:0} );
+                expect( game.getScore() ).toEqual( 0 );
+            })
+            
         });
         
-        it("returns status LOST if advance is done 33 times from left, without user input", function(){
-            expect( advanceManyTimesWithNoInput( game.MAX_COLUMNS + 1, true ) ).toEqual( {state: "LOST", row: undefined, column: undefined } );
+        describe("if kapsula just entered the screen and the input is given", function() {
+
+            it("returns status CRASHED when coming from left", function() {
+                advanceManyTimesWithNoInput( 1, true );
+                var result = game.advance( YES_INPUT );
+                expect( result ).toEqual( {state:game.STATE.CRASHED, row:ROW, column:0 } );
+            });
+            
+            it("returns status CRASHED when coming from right", function() {
+                advanceManyTimesWithNoInput( 1, false );
+                var result = game.advance( YES_INPUT );
+                expect( result ).toEqual( {state:game.STATE.CRASHED, row:ROW, column:31 } );
+            });
+            
+            it("does not increases the score", function() {
+                advanceManyTimesWithNoInput( 1, true );
+                game.advance( YES_INPUT );
+                expect( game.getScore() ).toEqual( 0 );
+            })
+            
         });
+        
+        describe("if kapsula made 3 steps before user input on free spot", function(){
+            
+            it("returns status LANDED when coming from the left", function() {
+                advanceManyTimesWithNoInput( 3, true );
+                var result = game.advance( YES_INPUT );
+                expect( result ).toEqual( {state:game.STATE.LANDED, row:ROW, column: 2 } );
+            });
+
+            it("returns status LANDED when coming from the right", function() {
+                advanceManyTimesWithNoInput( 3, false );
+                var result = game.advance( YES_INPUT );
+                expect( result ).toEqual( {state:game.STATE.LANDED, row:ROW, column: 29 } );
+            });
+
+            it("does increase the score", function() {
+                advanceManyTimesWithNoInput( 3, true );
+                expect( game.getScore() ).toEqual( 0 );
+                game.advance( YES_INPUT );
+                expect( game.getScore() ).toEqual( 1 );
+            })
+            
+            
+        });
+        
 
     });
       
