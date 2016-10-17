@@ -90,6 +90,10 @@ describe("KapsulaStepGame", function() {
         it("moves the object 15 steps when advanced 15 times", function() {
             expect( advanceManyTimesWithNoInput( 15, true ) ).toEqual( {state:game.STATE.FLYING_FROM_LEFT, row:ROW, column:14 } );
         });
+        
+        it("moves the object 32 steps when advanced 32 times and it still flies", function() {
+            expect( advanceManyTimesWithNoInput( game.MAX_COLUMNS, true ) ).toEqual( {state:game.STATE.FLYING_FROM_LEFT, row:ROW, column:game.MAX_COLUMNS-1} );
+        })
 
         describe("if kapsula leaves the screen", function() {
             
@@ -161,11 +165,35 @@ describe("KapsulaStepGame", function() {
                 game.advance( YES_INPUT );
                 expect( game.getScore() ).toEqual( 1 );
             })
-            
-            
+                
         });
         
-
+        describe("decreasing the number of available kapsulas", function() {
+            
+            it("initially has 40 kapsulas", function() {
+                expect( game.getNumberOfKapsulas() ).toEqual( game.INITIAL_NUMBER_OF_KAPSULAS );
+            });
+            
+            it("after first time will decrease by 1", function() {
+                advanceManyTimesWithNoInput( 6, true );
+                expect( game.getNumberOfKapsulas() ).toEqual( game.INITIAL_NUMBER_OF_KAPSULAS - 1 );
+            });
+            
+            it("after first kapsula is lost, and new kapsula started, will decrease by 2", function() {
+               advanceManyTimesWithNoInput( game.MAX_COLUMNS, false );
+               advanceManyTimesWithNoInput( 6, true );
+               expect( game.getNumberOfKapsulas() ).toEqual( game.INITIAL_NUMBER_OF_KAPSULAS - 2 );
+            });
+            
+            it("will enter the END state when all kapsulas are consumed", function() {
+               for( var i = 0; i < game.INITIAL_NUMBER_OF_KAPSULAS; i++ ){
+                   advanceManyTimesWithNoInput( game.MAX_COLUMNS + 1, false );               
+               } 
+               expect( game.advance(NO_INPUT) ).toEqual( {state:game.STATE.END, row:undefined, column:undefined } );
+            });
+            
+        })
+        
     });
       
 });
@@ -201,6 +229,9 @@ TestRandomizer.prototype.constructor = TestRandomizer;
 
 TestRandomizer.prototype.getRandomNumber = function(aLimit) {
     var nextNumber = this.nextNumberSequence.shift();
+    if( nextNumber === undefined ){
+        throw new Error( "ran out of predefined random numbers" );
+    }
     return nextNumber % aLimit;
 };
 

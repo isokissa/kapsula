@@ -15,6 +15,7 @@ KapsulaStepGame = function( aRandomizer ) {
     }
     this.randomizer = aRandomizer;
     this.score = 0;
+    this.remainingKapsulas = this.INITIAL_NUMBER_OF_KAPSULAS; 
     this.state = this.STATE.START;
     this.resetPositionAndHeight();
     this.occupiedPositions = [];
@@ -24,6 +25,8 @@ KapsulaStepGame = function( aRandomizer ) {
 
 KapsulaStepGame.prototype.MAX_ROW = 24;
 KapsulaStepGame.prototype.MAX_COLUMNS = 32;
+KapsulaStepGame.prototype.INITIAL_NUMBER_OF_KAPSULAS = 40;
+
 KapsulaStepGame.prototype.STATE = {
     START: function() {
         this.generateNewKapsula();
@@ -53,13 +56,22 @@ KapsulaStepGame.prototype.STATE = {
         }
     },
     LOST: function() {
-        this.generateNewKapsula();
+        if( this.remainingKapsulas > 1 ){
+            this.generateNewKapsula();
+        }
+        else {
+            this.state = this.STATE.END;
+            this.resetPositionAndHeight();
+        }
     },
     CRASHED: function() {
         
     },
     LANDED: function() {
 
+    },
+    END: function() {
+        
     }
 };
 
@@ -82,6 +94,10 @@ KapsulaStepGame.prototype.getScore = function() {
     return this.score; 
 }
 
+KapsulaStepGame.prototype.getNumberOfKapsulas = function() {
+    return this.remainingKapsulas; 
+}
+
 KapsulaStepGame.prototype.advance = function(aUserInput){
     if( aUserInput === undefined ){
         throw new InvalidParameterError("missing user input");
@@ -91,6 +107,7 @@ KapsulaStepGame.prototype.advance = function(aUserInput){
 };
 
 KapsulaStepGame.prototype.generateNewKapsula = function() {
+    this.remainingKapsulas--;
     this.height = this.randomizer.getRandomNumber( this.MAX_ROW - 1 );
     if( this.randomizer.getRandomNumber( 2 ) === 0 ){
         this.position = 0;
