@@ -65,12 +65,21 @@ KapsulaStepGame.prototype.STATE = {
         }
     },
     CRASHED: function() {
-        
-    },
-    LANDED: function() {
 
     },
+    LANDED: function() {
+        if( this.score === this.MAX_COLUMNS - 2 ){
+            this.state = this.STATE.COMPLETED;
+            this.resetPositionAndHeight();
+        }
+        else {
+            this.generateNewKapsula();        
+        }
+    },
     END: function() {
+        
+    },
+    COMPLETED: function() {
         
     }
 };
@@ -85,6 +94,7 @@ KapsulaStepGame.prototype.landOrCrash = function() {
         this.state = this.STATE.CRASHED;
     }
     else{
+        this.occupiedPositions[this.position] = true;
         this.state = this.STATE.LANDED;
         this.score = this.score + 1;
     }

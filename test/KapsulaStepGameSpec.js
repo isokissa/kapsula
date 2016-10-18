@@ -144,7 +144,23 @@ describe("KapsulaStepGame", function() {
             })
             
         });
-        
+
+        describe("if kapsula just passed the edge", function(){
+            
+            it("returns status LANDED when coming from the left", function() {
+                advanceManyTimesWithNoInput( 2, true );
+                var result = game.advance( YES_INPUT );
+                expect( result ).toEqual( {state:game.STATE.LANDED, row:ROW, column: 1 } );
+            });
+
+            it("returns status LANDED when coming from the right", function() {
+                advanceManyTimesWithNoInput( 2, false );
+                var result = game.advance( YES_INPUT );
+                expect( result ).toEqual( {state:game.STATE.LANDED, row:ROW, column: 30 } );
+            });
+
+        });
+
         describe("if kapsula made 3 steps before user input on free spot", function(){
             
             it("returns status LANDED when coming from the left", function() {
@@ -157,6 +173,20 @@ describe("KapsulaStepGame", function() {
                 advanceManyTimesWithNoInput( 3, false );
                 var result = game.advance( YES_INPUT );
                 expect( result ).toEqual( {state:game.STATE.LANDED, row:ROW, column: 29 } );
+            });
+
+            it("goes into crashed state if you try to land twice to the same position", function() {
+                advanceManyTimesWithNoInput( 2, true );
+                var shouldBeLanded = game.advance( YES_INPUT );
+                advanceManyTimesWithNoInput( 2, true );
+                var shouldBeCrashed = game.advance( YES_INPUT );
+                expect( shouldBeCrashed ).toEqual( {state:game.STATE.CRASHED, row:ROW, column:1} );                
+            });
+
+            it("goes into flying state after landing once", function() {
+                advanceManyTimesWithNoInput( 3, false );
+                var result = game.advance( YES_INPUT );
+                expect( advanceManyTimesWithNoInput( 1, true ) ).toEqual( {state:game.STATE.FLYING_FROM_LEFT, row:ROW, column:0} );
             });
 
             it("does increase the score", function() {
@@ -192,7 +222,20 @@ describe("KapsulaStepGame", function() {
                expect( game.advance(NO_INPUT) ).toEqual( {state:game.STATE.END, row:undefined, column:undefined } );
             });
             
-        })
+        });
+        
+        describe("when successfully landed 30 kapsulas", function(){
+           
+            it("enters the COMPLETED state and 8 are remaining", function(){
+                for( var i = 0; i < 30; i++ ){
+                    advanceManyTimesWithNoInput( i + 2, true );
+                    expect( game.advance( YES_INPUT) ).toEqual( {state:game.STATE.LANDED, row:ROW, column:i+1 } );
+                }
+                expect( advanceManyTimesWithNoInput( 1, true ) ).toEqual( {state:game.STATE.COMPLETED, row:undefined, column:undefined } );
+                expect( game.getNumberOfKapsulas() ).toEqual( game.INITIAL_NUMBER_OF_KAPSULAS - 30 );
+            });
+            
+        });
         
     });
       
