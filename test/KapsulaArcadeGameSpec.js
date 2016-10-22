@@ -8,42 +8,30 @@ require( "../public_html/js/kapsula");
 
 
 describe("KapsulaArcadeGame", function() {
-  
-    describe("when constructed", function() {
-                
-        it("accepts step game", function() {
-            var kapsulaStepGame = new KapsulaStepGame( new Randomizer() );
-            var dummy = new KapsulaArcadeGame( kapsulaStepGame );
+      
+    xdescribe("when invoking step()", function() {
+
+        var INITIAL_MILLISECONDS_TO_WAIT = 150;
+        var stepGame; 
+        var arcadeGame; 
+        
+        beforeEach( function() {
+            stepGame = new TestKapsulaStepGame();
+            arcadeGame = new KapsulaArcadeGame( stepGame );
         });
         
-        it("throws exception if step game is not given or is of wrong type", function() {
-            var testBlock = function() {
-                var dummy = new KapsulaArcadeGame( 2 );
-            }
-            expect( testBlock ).toThrowError( InvalidParameterError, "StepGame is not given" );
+        it("will invoke StepGame.advance()", function() {
+            spyOn( stepGame, "advance" );
+            arcadeGame.step();
+            expect( stepGame.advance ).toHaveBeenCalled();
         });
-                
-    });
-    
-    describe("when invoking step()", function() {
-
+        
+        it("will set howManyMillisecondsToWait to 150", function() {
+            arcadeGame.step();
+            expect( arcadeGame.howManyMillisecondsToWait() ).toEqual( INITIAL_MILLISECONDS_TO_WAIT );
+        })
     
     });
     
     
 });
-    
-////////////////////////////////////
-// spies
-////////////////////////////////////
-
-var TestKapsulaStepGame = function(){
-};
-
-TestKapsulaStepGame.prototype = Object.create( KapsulaStepGame.prototype );
-TestKapsulaStepGame.prototype.constructor = TestKapsulaStepGame;
-
-TestKapsulaStepGame.prototype.getRandomNumber = function(aLimit) {
-    return 0;
-};
-

@@ -6,37 +6,35 @@
 // GameRunner
 ////////////////////////////////
 
-GameRunner = function( aArcadeGame, aTimeoutFunction, aRendererFunction ) {
-    if( !(aArcadeGame instanceof ArcadeGame) ){
-        throw new InvalidParameterError( "ArcadeGame is not given" );
+GameRunner = {
+    
+    startLoop: function( aArcadeGame, aSetTimeoutFunction ){
+        var nextTimeoutTime = aArcadeGame.step( aArcadeGame );
+        aArcadeGame.setNextTimeoutTime( nextTimeoutTime );
+        
+        var iteration = function iteration() {
+            var howMuchToWaitForNext = aArcadeGame.step( aArcadeGame );
+            aArcadeGame.setNextTimeoutTime( howMuchToWaitForNext );
+            if( howMuchToWaitForNext > 0 ){
+                aSetTimeoutFunction( iteration, aArcadeGame.getNextTimeoutTime() );
+            }
+        };
+        
+        aSetTimeoutFunction( iteration, aArcadeGame.getNextTimeoutTime() );
     }
-    this.arcadeGame = aArcadeGame; 
-    if( !(aTimeoutFunction instanceof Function )){
-        throw new InvalidParameterError( "Timeout function is not given" );
+};
+
+
+ArcadeGame = {
+    
+    nextTimeoutTime: 123,
+        
+    setNextTimeoutTime: function( aNextTimeoutTime ) {
+        this.nextTimeoutTime = aNextTimeoutTime; 
+    },
+    
+    getNextTimeoutTime: function() {
+        return this.nextTimeoutTime; 
     }
-    this.timeoutFunction = aTimeoutFunction; 
-    if( !(aRendererFunction instanceof Function )){
-        throw new InvalidParameterError( "Renderer function is not given" );
-    }
-    this.rendererFunction = aRendererFunction; 
 };
 
-GameRunner.prototype.startLoop = function() {
-    this.step( this.arcadeGame.advance );
-};
-
-GameRunner.prototype.step = function( advanceFunction ) {
-    advanceFunction();
-    var that = this; 
-    this.timeoutFunction( function() {
-        that.step( that.arcadeGame.advance );
-    }, this.arcadeGame.howManyMillisecondsToWait );   
-}
-
-ArcadeGame = function() {
-    this.howManyMillisecondsToWait = 100;
-};
-
-ArcadeGame.prototype.advance = function() {
-    console.log( "do I know about " + this.howManyMillisecondsToWait );
-};

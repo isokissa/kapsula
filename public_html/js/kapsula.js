@@ -150,20 +150,10 @@ Randomizer.prototype.getRandomNumber = function(aUpperLimitOpen) {
 // KapsulaArcadeGame
 ////////////////////////////////
 
-KapsulaArcadeGame = function( aKapsulaStepGame ) {
-    if( !(aKapsulaStepGame instanceof KapsulaStepGame) ){
-        throw new InvalidParameterError( "StepGame is not given" );
-    }
-    this.kapsulaStepGame = aKapsulaStepGame; 
-};
-
-KapsulaArcadeGame.prototype.startLoop = function() {
-    this.timeoutFunction( this.step, 100 );
-};
-
-KapsulaArcadeGame.prototype.step = function() {
+var KapsulaArcadeGame = {
     
-}
+};
+
 
 ////////////////////////////////
 // InvalidParameterError
