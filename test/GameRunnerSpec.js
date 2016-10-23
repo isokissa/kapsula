@@ -17,13 +17,22 @@ describe("GameRunner", function() {
         var gameRunner;
 
         beforeEach( function() {
-           arcadeGame = createTestArcadeGame();
-           timeouter = Object.create( TestTimeouter );
-           gameRunner = Object.create( GameRunner );
+            arcadeGame = Object.create( ArcadeGame );
+            arcadeGame.step = function() {};
+            spyOn( arcadeGame, "step" ).and.returnValues( 1111, 2222, 3333, 4444, 5555 );
+            
+            timeouter = {
+                setTimeout: function( f, t ){
+                    if( t > 0 ){
+                        f();
+                    }
+                }
+           };
+           
+            gameRunner = Object.create( GameRunner );
         });
 
         it("invokes ArcadeGame's step() function", function() {
-            spyOn( arcadeGame, "step" );
             gameRunner.startLoop(arcadeGame, timeouter.setTimeout );
             expect( arcadeGame.step ).toHaveBeenCalled();
         });
@@ -49,31 +58,3 @@ describe("GameRunner", function() {
     });
     
 });
-       
-////////////////////////////////////
-// spies
-////////////////////////////////////
-
-var TestTimeouter = {
-            
-    setTimeout: function( f, t ){
-        if( t > 0 ){
-            f();
-        }
-    }
-        
-};
-
-function createTestArcadeGame() {
-    var testArcadeGame = Object.create( ArcadeGame );
-    
-    testArcadeGame.LAST_TIMEOUT_USED = 55;
-    
-    testArcadeGame.values = [1111, 2222, 3333, 4444, 5555];
-    
-    testArcadeGame.step = function() {
-        return testArcadeGame.values.shift();
-    };
-    
-    return testArcadeGame; 
-};

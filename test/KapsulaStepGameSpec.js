@@ -12,25 +12,13 @@ describe("KapsulaStepGame", function() {
     describe("when construct", function() {
         it("trows an exception if the randomizer is not given", function() {
             var testBlock = function(){
-                var dummy = new KapsulaStepGame();
+                var dummy = createKapsulaStepGame();
             };
             expect( testBlock ).toThrowError( InvalidParameterError, "missing randomizer" );
         });
-        
-        it("throws an exception if the randomizer is not of type randomizer", function() {
-            var testBlock = function(){
-                var dummy = new KapsulaStepGame(2);
-            };
-            expect( testBlock ).toThrowError( InvalidParameterError, "invalid randomizer" );
-        })
-        
-        it("succeeds if given randomizer inherits from Randomizer", function() {
-            var randomizer = new TestRandomizer();
-            var dummy = new KapsulaStepGame( randomizer );
-        })
-        
+                
         it("sets the score to zero", function() {
-            var kapsulaStepGame = new KapsulaStepGame( new TestRandomizer ); 
+            var kapsulaStepGame = createKapsulaStepGame( createTestRandomizer() ); 
             expect( kapsulaStepGame.getScore() ).toEqual( 0 );
         })
     });
@@ -43,8 +31,8 @@ describe("KapsulaStepGame", function() {
         var YES_INPUT = true;
         
         beforeEach(function() {
-            randomizer = new TestRandomizer();
-            game = new KapsulaStepGame(randomizer);
+            randomizer = createTestRandomizer();
+            game = createKapsulaStepGame(randomizer);
         });
 
         it("throws exception if no user input is given", function() {
@@ -244,7 +232,7 @@ describe("KapsulaStepGame", function() {
 describe("Randomizer", function() {
     
     it("throws exception if no upper limit is given in getRandomNumber", function() {
-        var randomizer = new Randomizer();
+        var randomizer = Object.create( Randomizer );
         var testBlock = function(){
             var a = randomizer.getRandomNumber();
         };
@@ -252,7 +240,7 @@ describe("Randomizer", function() {
     })
     
     it("throws exception if upper limit is less than 2", function() {
-        var randomizer = new Randomizer();
+        var randomizer = Object.create( Randomizer );
         var testBlock = function(){
             var a = randomizer.getRandomNumber( 1 );
         };
@@ -262,22 +250,22 @@ describe("Randomizer", function() {
 
 ///////////////////////
 
-var TestRandomizer = function TestRandomizer(){
-    Randomizer.apply(this, arguments);
-    this.nextNumberSequence = [1,1,1,1]; 
-};
+function createTestRandomizer(){
+    var testRandomizer = Object.create( Randomizer );
 
-TestRandomizer.prototype = Object.create( Randomizer.prototype );
-TestRandomizer.prototype.constructor = TestRandomizer;
+    testRandomizer.nextNumberSequence = [1,1,1,1]; 
 
-TestRandomizer.prototype.getRandomNumber = function(aLimit) {
-    var nextNumber = this.nextNumberSequence.shift();
-    if( nextNumber === undefined ){
-        throw new Error( "ran out of predefined random numbers" );
-    }
-    return nextNumber % aLimit;
-};
+    testRandomizer.getRandomNumber = function( aLimit ) {
+        var nextNumber = this.nextNumberSequence.shift();
+        if( nextNumber === undefined ){
+            throw new Error( "ran out of predefined random numbers" );
+        }
+        return nextNumber % aLimit;
+    };
+    
+    testRandomizer.setNextNumberSequence = function(aNextNumberSequence) {
+        this.nextNumberSequence = aNextNumberSequence; 
+    };
 
-TestRandomizer.prototype.setNextNumberSequence = function(aNextNumberSequence) {
-    this.nextNumberSequence = aNextNumberSequence; 
+    return testRandomizer; 
 };
