@@ -3,26 +3,26 @@
  */
 
 /////////////////////////////////////
-// KapsulaStepGame
+// KapsulaTurnBasedGame
 /////////////////////////////////////
 
-createKapsulaStepGame = function createKapsulaStepGame( aRandomizer ) {
+createKapsulaTurnBasedGame = function createKapsulaTurnBasedGame( aRandomizer ) {
     if( aRandomizer === undefined ){
         throw new InvalidParameterError("missing randomizer");
     }
-    var newStepGame = Object.create( KapsulaStepGame );
-    newStepGame.randomizer = aRandomizer;
-    newStepGame.score = 0;
-    newStepGame.remainingKapsulas = newStepGame.INITIAL_NUMBER_OF_KAPSULAS; 
-    newStepGame.state = newStepGame.STATE.START;
-    newStepGame.resetPositionAndHeight();
-    newStepGame.occupiedPositions = [];
-    newStepGame.occupiedPositions[0] = true;
-    newStepGame.occupiedPositions[31] = true;
-    return newStepGame; 
+    var newTurnBasedGame = Object.create( KapsulaTurnBasedGame );
+    newTurnBasedGame.randomizer = aRandomizer;
+    newTurnBasedGame.score = 0;
+    newTurnBasedGame.remainingKapsulas = newTurnBasedGame.INITIAL_NUMBER_OF_KAPSULAS; 
+    newTurnBasedGame.state = newTurnBasedGame.STATE.START;
+    newTurnBasedGame.resetPositionAndHeight();
+    newTurnBasedGame.occupiedPositions = [];
+    newTurnBasedGame.occupiedPositions[0] = true;
+    newTurnBasedGame.occupiedPositions[31] = true;
+    return newTurnBasedGame; 
 };
 
-var KapsulaStepGame = {
+var KapsulaTurnBasedGame = {
     
     MAX_ROW: 24,
     MAX_COLUMNS: 32,
@@ -109,7 +109,7 @@ var KapsulaStepGame = {
         return this.remainingKapsulas; 
     },
 
-    advance: function(aUserInput){
+    takeTurn: function(aUserInput){
         if( aUserInput === undefined ){
             throw new InvalidParameterError("missing user input");
         }
@@ -154,16 +154,16 @@ Randomizer = {
 // KapsulaArcadeGame
 ////////////////////////////////
 
-createKapsulaArcadeGame = function createKapsulaArcadeGame( aStepGame ){
+createKapsulaArcadeGame = function createKapsulaArcadeGame( aTurnBasedGame ){
     var newArcadeGame = Object.create( KapsulaArcadeGame );
-    newArcadeGame.stepGame = aStepGame;
+    newArcadeGame.turnBasedGame = aTurnBasedGame;
     return newArcadeGame; 
 };
 
 
 var KapsulaArcadeGame = {
     step: function() {
-        this.stepGame.advance( false );
+        this.turnBasedGame.takeTurn( false );
     }
 };
 
