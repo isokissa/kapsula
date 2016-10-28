@@ -19,7 +19,6 @@ describe("GameRunner", function() {
         beforeEach( function() {
             arcadeGame = Object.create( ArcadeGame );
             arcadeGame.step = function() {};
-            spyOn( arcadeGame, "step" ).and.returnValues( 1111, 2222, 3333, 4444, 5555 );
             
             timeouter = {
                 setTimeout: function( f, t ){
@@ -33,23 +32,27 @@ describe("GameRunner", function() {
         });
 
         it("invokes ArcadeGame's step() function", function() {
+            spyOn( arcadeGame, "step" ).and.returnValues( 1111 );
             gameRunner.startLoop(arcadeGame, timeouter.setTimeout );
             expect( arcadeGame.step ).toHaveBeenCalled();
         });
 
         it("invokes setTimeout() function", function() {
+            spyOn( arcadeGame, "step" ).and.returnValues( 1111 );
             spyOn( timeouter, "setTimeout" );
             gameRunner.startLoop(arcadeGame, timeouter.setTimeout );
             expect( timeouter.setTimeout ).toHaveBeenCalledWith(jasmine.anything(), 1111);
         });
-        
+                
         it("will set the next timeout to 2222 milliseconds", function() {
+            spyOn( arcadeGame, "step" ).and.returnValues( 1111, 2222 );
             spyOn( arcadeGame, "setNextTimeoutTime" );
             gameRunner.startLoop(arcadeGame, timeouter.setTimeout );
             expect( arcadeGame.setNextTimeoutTime ).toHaveBeenCalledWith( 2222 );
         });
         
         it("invokes timeout with the value given by previous call to ArcadeGame's step() function", function() {
+            spyOn( arcadeGame, "step" ).and.returnValues( 1111, 2222, 3333, 4444, 5555 );
             spyOn( timeouter, "setTimeout" ).and.callThrough();
             gameRunner.startLoop(arcadeGame, timeouter.setTimeout );
             expect( timeouter.setTimeout ).toHaveBeenCalledTimes(5);            

@@ -154,19 +154,78 @@ Randomizer = {
 // KapsulaArcadeGame
 ////////////////////////////////
 
-createKapsulaArcadeGame = function createKapsulaArcadeGame( aTurnBasedGame ){
+createKapsulaArcadeGame = function createKapsulaArcadeGame( aTurnBasedGame, aRenderer ){
     var newArcadeGame = Object.create( KapsulaArcadeGame );
     newArcadeGame.turnBasedGame = aTurnBasedGame;
+    newArcadeGame.renderer = aRenderer;
+    newArcadeGame.state = newArcadeGame.STATE.ACTIVE;
+    newArcadeGame.flyingDelay = newArcadeGame.INITIAL_FLYING_DELAY;
     return newArcadeGame; 
 };
 
 
 var KapsulaArcadeGame = {
+    
+    INITIAL_FLYING_DELAY: 200,
+    current: {},
+    
     step: function() {
-        this.turnBasedGame.takeTurn( false );
+        return this.state(); 
+    },
+        
+    STATE: {
+        ACTIVE: function() {
+            var turnBasedGameState = this.turnBasedGame.takeTurn();
+            this.renderer.showKapsula( turnBasedGameState.row, turnBasedGameState.column );
+            switch( turnBasedGameState.state ){
+                case this.turnBasedGame.STATE.FLYING_FROM_LEFT:
+                case this.turnBasedGame.STATE.FLYING_FROM_RIGHT:
+                    return this.flyingDelay; 
+                case this.turnBasedGame.STATE.LANDED:
+                    this.renderer.showScore( 1 );
+                case this.turnBasedGame.STATE.CRASHED:
+                    this.state = this.STATE.LANDING;
+                    this.current.row = turnBasedGameState.row; 
+                    this.current.column = turnBasedGameState.column;
+                    return this.flyingDelay / 2; 
+                default:
+                    break;
+            }
+        },
+        LANDING: function() {
+            this.renderer.showKapsula( this.current.row, this.current.column );
+            this.current.row++;
+            if( this.current.row > 23){
+                this.state = this.STATE.ACTIVE;
+                return 1000; 
+            }
+            else{
+                return this.flyingDelay / 2;
+            }
+        }
     }
+    
 };
 
+////////////////////////////////
+// KapsulaRenderer
+////////////////////////////////
+
+createKapsulaRenderer = function createKapsulaRenderer( aWindow ){
+    var renderer = Object.create( KapsulaRenderer );
+    return renderer;
+};
+
+var KapsulaRenderer = {
+    showKapsula: function( row, column ) {
+        
+    },
+    
+    showScore: function( score ) {
+        
+    }
+    
+}
 
 ////////////////////////////////
 // InvalidParameterError
