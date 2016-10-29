@@ -3,11 +3,15 @@ $(document).ready( function() {
     var myRect = document.getElementById("myRect");
     
     
-    var randomizer = new Randomizer();
-    var stepGame = new KapsulaStepGame( randomizer );
-    var arcadeGame = new KapsulaArcadeGame( stepGame, window.setTimeout, undefined );
+    var randomizer = createRandomizer();
+    var stepGame = createKapsulaTurnBasedGame( randomizer );
+    var renderer = createKapsulaRenderer( myRect );
+    var arcadeGame = createKapsulaArcadeGame( stepGame, renderer );
     
-    arcadeGame.loop();
+    arcadeGame.prototype = Object.create( ArcadeGame ); 
+    var gameRunner = Object.create( GameRunner );
+    
+    gameRunner.startLoop( arcadeGame, window.setTimeout );
     
 });
 

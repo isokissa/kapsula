@@ -135,6 +135,11 @@ var KapsulaTurnBasedGame = {
 // Randomizer 
 /////////////////////////////////
 
+createRandomizer = function createRandomizer(){
+    randomizer = Object.create( Randomizer );
+    return randomizer; 
+}
+
 Randomizer = {
     
     getRandomNumber: function(aUpperLimitOpen) {
@@ -175,7 +180,7 @@ var KapsulaArcadeGame = {
         
     STATE: {
         ACTIVE: function() {
-            var turnBasedGameState = this.turnBasedGame.takeTurn();
+            var turnBasedGameState = this.turnBasedGame.takeTurn( false );
             this.renderer.showKapsula( turnBasedGameState.row, turnBasedGameState.column );
             switch( turnBasedGameState.state ){
                 case this.turnBasedGame.STATE.FLYING_FROM_LEFT:
@@ -211,14 +216,17 @@ var KapsulaArcadeGame = {
 // KapsulaRenderer
 ////////////////////////////////
 
-createKapsulaRenderer = function createKapsulaRenderer( aWindow ){
+createKapsulaRenderer = function createKapsulaRenderer( aKapsulaElement ){
     var renderer = Object.create( KapsulaRenderer );
+    renderer.currentKapsulaElement = aKapsulaElement; 
     return renderer;
 };
 
 var KapsulaRenderer = {
+    
     showKapsula: function( row, column ) {
-        
+        this.currentKapsulaElement.setAttribute( "x", row * 8 );
+        this.currentKapsulaElement.setAttribute( "y", column * 8 );
     },
     
     showScore: function( score ) {

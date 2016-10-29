@@ -232,7 +232,7 @@ describe("KapsulaTurnBasedGame", function() {
 describe("Randomizer", function() {
     
     it("throws exception if no upper limit is given in getRandomNumber", function() {
-        var randomizer = Object.create( Randomizer );
+        var randomizer = createRandomizer();
         var testBlock = function(){
             var a = randomizer.getRandomNumber();
         };

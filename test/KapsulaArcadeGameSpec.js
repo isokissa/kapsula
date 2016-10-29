@@ -24,7 +24,10 @@ describe("KapsulaArcadeGame", function() {
                 getRandomNumber: function() {}
             };
             turnBasedGame = createKapsulaTurnBasedGame( dummyRandomizer );
-            renderer = createKapsulaRenderer();
+            renderer = {
+                showKapsula: function( x, y ) {},
+                showScore: function( s ) {}
+            };
             arcadeGame = createKapsulaArcadeGame( turnBasedGame, renderer );
             arcadeGame.state = arcadeGame.STATE.ACTIVE;
         });
