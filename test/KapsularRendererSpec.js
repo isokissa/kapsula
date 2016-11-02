@@ -30,8 +30,8 @@ describe("KapsulaRenderer", function() {
         it("will set the row and column to the given element", function() {
             spyOn( dummyCurrentKapsulaElement, "setAttribute" );
             renderer.showKapsula( ROW, COLUMN );
-            expect( dummyCurrentKapsulaElement.setAttribute ).toHaveBeenCalledWith( "x", ROW * 8 ); 
-            expect( dummyCurrentKapsulaElement.setAttribute ).toHaveBeenCalledWith( "y", COLUMN * 8 );
+            expect( dummyCurrentKapsulaElement.setAttribute ).toHaveBeenCalledWith( "x", COLUMN * 8 ); 
+            expect( dummyCurrentKapsulaElement.setAttribute ).toHaveBeenCalledWith( "y", ROW * 8 );
         });
         
     });

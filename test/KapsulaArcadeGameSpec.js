@@ -8,31 +8,93 @@ require( "../public_html/js/kapsula");
 
 
 describe("KapsulaArcadeGame", function() {
-      
-    describe("when invoking step()", function() {
 
-        var turnBasedGame;
-        var renderer;
-        var arcadeGame; 
-        
-        function s(aState, aRow, aColumn){
-            return {state: aState, row: aRow, column: aColumn};
+    var turnBasedGame;
+    var renderer;
+    var arcadeGame; 
+
+    function s(aState, aRow, aColumn){
+        return {state: aState, row: aRow, column: aColumn};
+    };
+
+    beforeEach( function() {
+        var dummyRandomizer = {
+            getRandomNumber: function() {}
         };
+        turnBasedGame = createKapsulaTurnBasedGame( dummyRandomizer );
+        renderer = {
+            showKapsula: function( x, y ) {},
+            showScore: function( s ) {}
+        };
+        arcadeGame = createKapsulaArcadeGame( turnBasedGame, renderer );
+    });
+
+    describe("when created", function(){
+     
+        it("is in START state", function() {
+            expect( arcadeGame.state ).toEqual( arcadeGame.STATE.START );
+        }); 
         
-        beforeEach( function() {
-            var dummyRandomizer = {
-                getRandomNumber: function() {}
-            };
-            turnBasedGame = createKapsulaTurnBasedGame( dummyRandomizer );
-            renderer = {
-                showKapsula: function( x, y ) {},
-                showScore: function( s ) {}
-            };
-            arcadeGame = createKapsulaArcadeGame( turnBasedGame, renderer );
-            arcadeGame.state = arcadeGame.STATE.ACTIVE;
+        it("has score equal to zero", function() {
+            expect( arcadeGame.score ).toEqual( 0 );
+        }); 
+        
+        it("has level equal to 1", function() {
+            expect( arcadeGame.level ).toEqual( 1 );
+        })
+        
+    });
+    
+    describe("when executing step()", function() {
+        
+        describe("in START state", function() {
+
+            beforeEach( function() {
+                arcadeGame.state = arcadeGame.STATE.START; 
+            });
+
+            it("will return 1 millisecond", function() {
+                expect( arcadeGame.step() ).toEqual( 1 );
+            });
+
+
+            it("will go into START_LEVEL state", function() {
+                arcadeGame.step();
+                expect( arcadeGame.state ).toEqual( arcadeGame.STATE.START_LEVEL );
+            });
+            
+        });
+        
+        describe("in START_LEVEL state", function() {
+            
+            beforeEach( function() {
+                arcadeGame.state = arcadeGame.STATE.START_LEVEL; 
+            });
+            
+            it("will execute start() method of turnBasedGame", function(){
+                spyOn( turnBasedGame, "start" );
+                arcadeGame.step();
+                expect( turnBasedGame.start ).toHaveBeenCalled(); 
+            });
+            
+            it("will go into FLYING state", function() {
+                arcadeGame.step();
+                expect( arcadeGame.state ).toEqual( arcadeGame.STATE.FLYING ); 
+            }); 
+            
+            it("will return 1 millisecond as the time till next step", function(){
+                expect( arcadeGame.step() ).toEqual( 1 );
+            });
+            
         });
 
-        describe("in first level (beginning of game)", function(){
+    });
+    
+    
+    xdescribe("when invoking step()", function() {
+
+
+        describe("in the beginning of level", function(){
 
             it("will invoke TurnBasedGame.takeTurn()", function() {
                 spyOn( turnBasedGame, "takeTurn" ).and.returnValues(
@@ -48,6 +110,10 @@ describe("KapsulaArcadeGame", function() {
                 );
                 expect( arcadeGame.INITIAL_FLYING_DELAY > 0 ).toEqual( true );
                 expect( arcadeGame.step() ).toEqual( arcadeGame.INITIAL_FLYING_DELAY );
+            });
+            
+            xit("will show the decreased total number of kapsulas for this level", function() {
+                
             });
             
         });
@@ -165,8 +231,6 @@ describe("KapsulaArcadeGame", function() {
             
         });
         
-        
-
         
     });
     

@@ -12,9 +12,10 @@ createKapsulaTurnBasedGame = function createKapsulaTurnBasedGame( aRandomizer ) 
     }
     var newTurnBasedGame = Object.create( KapsulaTurnBasedGame );
     newTurnBasedGame.randomizer = aRandomizer;
-    newTurnBasedGame.score = 0;
-    newTurnBasedGame.remainingKapsulas = newTurnBasedGame.INITIAL_NUMBER_OF_KAPSULAS; 
-    newTurnBasedGame.state = newTurnBasedGame.STATE.START;
+    newTurnBasedGame.score = undefined;
+    newTurnBasedGame.remainingKapsulas = undefined; 
+    newTurnBasedGame.remainingLives = undefined; 
+    newTurnBasedGame.state = undefined;
     newTurnBasedGame.resetPositionAndHeight();
     newTurnBasedGame.occupiedPositions = [];
     newTurnBasedGame.occupiedPositions[0] = true;
@@ -27,10 +28,26 @@ var KapsulaTurnBasedGame = {
     MAX_ROW: 24,
     MAX_COLUMNS: 32,
     INITIAL_NUMBER_OF_KAPSULAS: 40,
+    
+    start: function() {
+        this.score = 0;
+        this.remainingLives = 1; 
+        this.state = this.STATE.NEW_KAPSULA;
+        this.remainingKapsulas = this.INITIAL_NUMBER_OF_KAPSULAS;
+    },
 
     STATE: {
-        START: function() {
-            this.generateNewKapsula();
+        NEW_KAPSULA: function() {
+            this.remainingKapsulas--;
+            this.height = this.randomizer.getRandomNumber( this.MAX_ROW - 1 );
+            if( this.randomizer.getRandomNumber( 2 ) === 0 ){
+                this.position = 0;
+                this.state = this.STATE.FLYING_FROM_LEFT; 
+            }
+            else {
+                this.position = this.MAX_COLUMNS-1;
+                this.state = this.STATE.FLYING_FROM_RIGHT; 
+            }
         },
         FLYING_FROM_LEFT: function( aUserInput ) {
             if( aUserInput ){
@@ -57,31 +74,38 @@ var KapsulaTurnBasedGame = {
             }
         },
         LOST: function() {
+            this.resetPositionAndHeight();
             if( this.remainingKapsulas > 1 ){
-                this.generateNewKapsula();
+                this.state = this.STATE.NEW_KAPSULA;
             }
             else {
-                this.state = this.STATE.END;
-                this.resetPositionAndHeight();
+                this.state = this.STATE.END_FAIL;
             }
         },
         CRASHED: function() {
-
+            this.remainingLives --;
+            if( this.remainingLives > 0 ){
+                this.state = this.STATE.NEW_KAPSULA; 
+            }
+            else{
+                this.state = this.STATE.END_FAIL; 
+            }
         },
         LANDED: function() {
             if( this.score === this.MAX_COLUMNS - 2 ){
-                this.state = this.STATE.COMPLETED;
+                this.state = this.STATE.END_WIN;
                 this.resetPositionAndHeight();
             }
             else {
-                this.generateNewKapsula();        
+                this.score ++; 
+                this.state = this.STATE.NEW_KAPSULA;        
             }
         },
-        END: function() {
-
+        END_FAIL: function() {
+            
         },
-        COMPLETED: function() {
-
+        END_WIN: function() {
+            
         }
     },
 
@@ -105,8 +129,12 @@ var KapsulaTurnBasedGame = {
         return this.score; 
     },
 
-    getNumberOfKapsulas: function() {
+    getNumberOfRemainingKapsulas: function() {
         return this.remainingKapsulas; 
+    },
+
+    getRemainingLives: function() {
+        return this.remainingLives; 
     },
 
     takeTurn: function(aUserInput){
@@ -117,18 +145,6 @@ var KapsulaTurnBasedGame = {
         return { state: this.state, row: this.height, column: this.position };
     },
 
-    generateNewKapsula: function() {
-        this.remainingKapsulas--;
-        this.height = this.randomizer.getRandomNumber( this.MAX_ROW - 1 );
-        if( this.randomizer.getRandomNumber( 2 ) === 0 ){
-            this.position = 0;
-            this.state = this.STATE.FLYING_FROM_LEFT; 
-        }
-        else {
-            this.position = this.MAX_COLUMNS-1;
-            this.state = this.STATE.FLYING_FROM_RIGHT; 
-        }
-    }
 };
 
 /////////////////////////////////
@@ -160,26 +176,31 @@ Randomizer = {
 ////////////////////////////////
 
 createKapsulaArcadeGame = function createKapsulaArcadeGame( aTurnBasedGame, aRenderer ){
-    var newArcadeGame = Object.create( KapsulaArcadeGame );
+    var newArcadeGame = Object.create( ArcadeGame );
     newArcadeGame.turnBasedGame = aTurnBasedGame;
     newArcadeGame.renderer = aRenderer;
-    newArcadeGame.state = newArcadeGame.STATE.ACTIVE;
+    newArcadeGame.score = 0;
+    newArcadeGame.level = 1; 
+    newArcadeGame.INITIAL_FLYING_DELAY = 300;
     newArcadeGame.flyingDelay = newArcadeGame.INITIAL_FLYING_DELAY;
-    return newArcadeGame; 
-};
 
-
-var KapsulaArcadeGame = {
+    newArcadeGame.current = {};
     
-    INITIAL_FLYING_DELAY: 200,
-    current: {},
-    
-    step: function() {
+    newArcadeGame.step = function() {
         return this.state(); 
-    },
+    };
         
-    STATE: {
-        ACTIVE: function() {
+    newArcadeGame.STATE = {
+        START: function() {
+            newArcadeGame.state = newArcadeGame.STATE.START_LEVEL; 
+            return 1; 
+        },
+        START_LEVEL: function() {
+            newArcadeGame.turnBasedGame.start();
+            newArcadeGame.state = newArcadeGame.STATE.FLYING; 
+            return 1; 
+        },
+        FLYING: function() {
             var turnBasedGameState = this.turnBasedGame.takeTurn( false );
             this.renderer.showKapsula( turnBasedGameState.row, turnBasedGameState.column );
             switch( turnBasedGameState.state ){
@@ -208,9 +229,13 @@ var KapsulaArcadeGame = {
                 return this.flyingDelay / 2;
             }
         }
-    }
-    
+    };
+
+    newArcadeGame.state = newArcadeGame.STATE.START;
+
+    return newArcadeGame; 
 };
+
 
 ////////////////////////////////
 // KapsulaRenderer
@@ -225,8 +250,8 @@ createKapsulaRenderer = function createKapsulaRenderer( aKapsulaElement ){
 var KapsulaRenderer = {
     
     showKapsula: function( row, column ) {
-        this.currentKapsulaElement.setAttribute( "x", row * 8 );
-        this.currentKapsulaElement.setAttribute( "y", column * 8 );
+        this.currentKapsulaElement.setAttribute( "x", column * 8 );
+        this.currentKapsulaElement.setAttribute( "y", row * 8 );
     },
     
     showScore: function( score ) {
