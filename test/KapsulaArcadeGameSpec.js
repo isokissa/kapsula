@@ -56,8 +56,7 @@ describe("KapsulaArcadeGame", function() {
             it("will return 1 millisecond", function() {
                 expect( arcadeGame.step() ).toEqual( 1 );
             });
-
-
+            
             it("will go into START_LEVEL state", function() {
                 arcadeGame.step();
                 expect( arcadeGame.state ).toEqual( arcadeGame.STATE.START_LEVEL );
@@ -87,152 +86,134 @@ describe("KapsulaArcadeGame", function() {
             });
             
         });
-
-    });
-    
-    
-    xdescribe("when invoking step()", function() {
-
-
-        describe("in the beginning of level", function(){
-
-            it("will invoke TurnBasedGame.takeTurn()", function() {
-                spyOn( turnBasedGame, "takeTurn" ).and.returnValues(
-                    s(0, 0, 0)
-                );
-                arcadeGame.step();
-                expect( turnBasedGame.takeTurn ).toHaveBeenCalled();
-            });
-            
-            it("will return initial delay when flying", function(){
-                spyOn( turnBasedGame, "takeTurn" ).and.returnValues(
-                    s( turnBasedGame.STATE.FLYING_FROM_LEFT, 14, 0 )
-                );
-                expect( arcadeGame.INITIAL_FLYING_DELAY > 0 ).toEqual( true );
-                expect( arcadeGame.step() ).toEqual( arcadeGame.INITIAL_FLYING_DELAY );
-            });
-            
-            xit("will show the decreased total number of kapsulas for this level", function() {
-                
-            });
-            
-        });
         
-        describe( "if the returned state says that kapsula is flying", function() {
+        describe("in FLYING state", function() {
             
             beforeEach( function() {
-                spyOn( renderer, "showKapsula" );
+                arcadeGame.state = arcadeGame.STATE.FLYING; 
             });
             
-            it("will be in state FLYING if flying from left", function() {
-                spyOn( turnBasedGame, "takeTurn" ).and.returnValues( 
-                    s(turnBasedGame.STATE.FLYING_FROM_LEFT, 15, 0) 
-                );
-                arcadeGame.step();
-                expect( arcadeGame.state ).toEqual( arcadeGame.STATE.ACTIVE );                
-            });
+            var direction; 
 
-            it("will be in state FLYING if flying from right", function() {
-                spyOn( turnBasedGame, "takeTurn" ).and.returnValues( 
-                    s(turnBasedGame.STATE.FLYING_FROM_RIGHT, 15, 0) 
-                );
-                arcadeGame.step();
-                expect( arcadeGame.state ).toEqual( arcadeGame.STATE.ACTIVE );                
-            });
+            function flyingTests(){
 
-            it("will invoke renderer if turnBasedGame returns FLYING_FROM_LEFT state", function() {
-                spyOn( turnBasedGame, "takeTurn" ).and.returnValues( 
-                    s(turnBasedGame.STATE.FLYING_FROM_LEFT, 15, 0) 
-                );
-                arcadeGame.step();
-                expect( turnBasedGame.takeTurn ).toHaveBeenCalled();
-                expect( renderer.showKapsula ).toHaveBeenCalledWith( 15, 0 );
-            });
-
-            it("will invoke renderer twice if turnBasedGame returns FLYING_FROM_RIGHT state twice", function() {
-                spyOn( turnBasedGame, "takeTurn" ).and.returnValues( 
-                    s(turnBasedGame.STATE.FLYING_FROM_RIGHT, 15, 31), 
-                    s(turnBasedGame.STATE.FLYING_FROM_RIGHT, 15, 30) 
-                );
-                arcadeGame.step();
-                expect( turnBasedGame.takeTurn ).toHaveBeenCalled();
-                expect( renderer.showKapsula ).toHaveBeenCalledWith( 15, 31 );
-                arcadeGame.step();
-                expect( renderer.showKapsula ).toHaveBeenCalledWith( 15, 30 );
-            });
-
-        });
-
-        describe("if the returned state says that kapsula is going down", function() {
-
-            beforeEach( function() {
-                spyOn( renderer, "showKapsula" );
-            });
-
-            it("will be in state LANDING if LANDED", function() {
-                spyOn( turnBasedGame, "takeTurn" ).and.returnValues( 
-                    s(turnBasedGame.STATE.LANDED, 15, 0) 
-                );
-                arcadeGame.step();
-                expect( arcadeGame.state ).toEqual( arcadeGame.STATE.LANDING );                
-            });
-
-            it("will invoke renderer in LANDED state", function() {
-                spyOn( turnBasedGame, "takeTurn" ).and.returnValues(
-                    s(turnBasedGame.STATE.LANDED, 15, 5 )
-                );
-                arcadeGame.step();
-                expect( renderer.showKapsula ).toHaveBeenCalledWith( 15, 5 );
-            });
-            
-            it("will return half of flying delay when in LANDING state", function() {
-                spyOn( turnBasedGame, "takeTurn" ).and.returnValues(
-                    s(turnBasedGame.STATE.LANDED, 15, 5 )
-                );
-                expect( arcadeGame.step() - arcadeGame.INITIAL_FLYING_DELAY / 2 < 1 ).toEqual( true );
-            });
-            
-            it("will perform the LANDING animation once TurnBasedGame return LANDED state", function() {
-                spyOn( turnBasedGame, "takeTurn" ).and.returnValues( 
-                    s(turnBasedGame.STATE.LANDED, 15, 5)
-                );
-                arcadeGame.step();
-                expect( arcadeGame.state ).toEqual( arcadeGame.STATE.LANDING );
-                expect( renderer.showKapsula ).toHaveBeenCalledWith( 15, 5 );
-                for( var i = 15; i < 23; i++ ){
-                    arcadeGame.step();
-                    expect( renderer.showKapsula ).toHaveBeenCalledWith( i, 5 );
+                function dir(){
+                    return direction?turnBasedGame.STATE.FLYING_FROM_LEFT:turnBasedGame.STATE.FLYING_FROM_RIGHT;
                 }
-            });
+                
+                it("will invoke turnBasedGame takeTurn()", function() {
+                    spyOn( turnBasedGame, "takeTurn" ).and.returnValues(
+                        s( dir(), 14, 0 )
+                    );
+                    arcadeGame.step();
+                    expect( turnBasedGame.takeTurn ).toHaveBeenCalledTimes( 1 ); 
+                }); 
 
-            it("will invoke renderer in CRASHED state", function() {
-                spyOn( turnBasedGame, "takeTurn" ).and.returnValues(
-                    s(turnBasedGame.STATE.CRASHED, 15, 5 )
-                );
-                arcadeGame.step();
-                expect( renderer.showKapsula ).toHaveBeenCalledWith( 15, 5 );
-            });
+                it("will return initial delay", function(){
+                    spyOn( turnBasedGame, "takeTurn" ).and.returnValues(
+                        s( dir(), 14, 0 )
+                    );
+                    expect( arcadeGame.INITIAL_FLYING_DELAY > 0 ).toEqual( true );
+                    expect( arcadeGame.step() ).toEqual( arcadeGame.INITIAL_FLYING_DELAY );
+                });
 
-        });
-        
-        describe("if returned state requires that the score has to change", function() {
+                it("will stay in FLYING state if no input is given", function(){
+                    spyOn( turnBasedGame, "takeTurn" ).and.returnValues(
+                        s( dir(), 14, 5 )
+                    );
+                    arcadeGame.step();
+                    expect( arcadeGame.state ).toEqual( arcadeGame.STATE.FLYING );                
+                });
 
-            beforeEach( function() {
-                spyOn( renderer, "showScore" );
-            });
+                it("will invoke renderer showKapsula()", function() {
+                    spyOn( turnBasedGame, "takeTurn" ).and.returnValues( 
+                        s( dir(), 15, 0 ) 
+                    );
+                    spyOn( renderer, "showKapsula" );
+                    arcadeGame.step();
+                    expect( turnBasedGame.takeTurn ).toHaveBeenCalled();
+                    expect( renderer.showKapsula ).toHaveBeenCalledWith( 15, 0 );
+                });
 
-            it("will increase the score when TurnBasedGame is LANDED", function() {
-                spyOn( turnBasedGame, "takeTurn" ).and.returnValues(
-                    s(turnBasedGame.STATE.LANDED, 15, 5) 
-                );
-                arcadeGame.step();
-                expect( renderer.showScore ).toHaveBeenCalledWith( 1 );
-            });
+                it("will invoke renderer showKapsula() twice if turnBasedGame returns FLYING_* twice", function() {
+                    spyOn( turnBasedGame, "takeTurn" ).and.returnValues( 
+                        s( dir, 15, 31), 
+                        s( dir, 15, 30) 
+                    );
+                    spyOn( renderer, "showKapsula" );
+                    arcadeGame.step();
+                    expect( turnBasedGame.takeTurn ).toHaveBeenCalled();
+                    expect( renderer.showKapsula ).toHaveBeenCalledWith( 15, 31 );
+                    arcadeGame.step();
+                    expect( renderer.showKapsula ).toHaveBeenCalledWith( 15, 30 );
+                });
+                                
+            };
+                        
+            direction = true; 
+            
+            describe("from left", flyingTests);
+            
+            direction = false; 
+            
+            describe("from right", flyingTests);
+
+            describe("when turnBasedGame returns the LANDED state", function() {
+
+                beforeEach( function() {
+                    spyOn( turnBasedGame, "takeTurn" ).and.returnValues( 
+                        s( turnBasedGame.STATE.LANDED, 15, 5) 
+                    );                    
+                });
+
+                it("will enter the LANDING state", function(){
+                    arcadeGame.step();
+                    expect( arcadeGame.state ).toEqual( arcadeGame.STATE.LANDING );
+                })
+
+                it("will increase and render the score", function() {
+                    spyOn( renderer, "showScore" );
+                    var oldScore = arcadeGame.score; 
+                    arcadeGame.step();
+                    expect( arcadeGame.score ).toEqual( oldScore + 1 ); 
+                    expect( renderer.showScore ).toHaveBeenCalledWith( oldScore + 1 );
+                });                
+                
+                it("will set the current position as starting position for landing", function(){
+                    arcadeGame.step();
+                    expect( arcadeGame.current.row ).toEqual( 15 );
+                    expect( arcadeGame.current.column ).toEqual( 5 );
+                });
+
+            });            
             
         });
         
-        
+        describe("in LANDING state", function() {
+            
+            beforeEach( function() {
+                arcadeGame.state = arcadeGame.STATE.LANDING;
+                arcadeGame.current.row = 15; 
+                arcadeGame.current.column = 5;
+            });
+            
+            it("reduces the height of a kapsula", function(){
+                arcadeGame.step();
+                expect( arcadeGame.current.row ).toEqual( 16 );
+            }); 
+            
+            it("returns half of FLYING milliseconds", function() {
+                expect( arcadeGame.step() - arcadeGame.INITIAL_FLYING_DELAY/2 < 0.001 ).toEqual( true );
+            }); 
+            
+            it("goes into FLYING state after platform is reached", function(){
+                arcadeGame.current.row = 23; 
+                arcadeGame.step(); 
+                expect( arcadeGame.state ).toEqual( arcadeGame.STATE.FLYING );
+            });
+            
+        });
+
     });
-    
-    
+        
 });

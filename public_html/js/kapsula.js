@@ -201,14 +201,15 @@ createKapsulaArcadeGame = function createKapsulaArcadeGame( aTurnBasedGame, aRen
             return 1; 
         },
         FLYING: function() {
-            var turnBasedGameState = this.turnBasedGame.takeTurn( false );
+            var turnBasedGameState = newArcadeGame.turnBasedGame.takeTurn( false );
             this.renderer.showKapsula( turnBasedGameState.row, turnBasedGameState.column );
             switch( turnBasedGameState.state ){
                 case this.turnBasedGame.STATE.FLYING_FROM_LEFT:
                 case this.turnBasedGame.STATE.FLYING_FROM_RIGHT:
                     return this.flyingDelay; 
                 case this.turnBasedGame.STATE.LANDED:
-                    this.renderer.showScore( 1 );
+                    this.score ++;
+                    this.renderer.showScore( this.score );
                 case this.turnBasedGame.STATE.CRASHED:
                     this.state = this.STATE.LANDING;
                     this.current.row = turnBasedGameState.row; 
@@ -222,7 +223,7 @@ createKapsulaArcadeGame = function createKapsulaArcadeGame( aTurnBasedGame, aRen
             this.renderer.showKapsula( this.current.row, this.current.column );
             this.current.row++;
             if( this.current.row > 23){
-                this.state = this.STATE.ACTIVE;
+                this.state = this.STATE.FLYING;
                 return 1000; 
             }
             else{
