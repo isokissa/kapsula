@@ -1,21 +1,6 @@
 $(document).ready( function() {
 
 
-    var obj = {
-        tata: function() {}
-    }
-    
-    var sin = { 
-        dete: function() {}
-    }
-    
-    d = Object.create( obj );
-    d.dete = function () {};
-    d.dete();
-    d.tata();
-
-
-
     var myRect = document.getElementById("myRect");
     
     

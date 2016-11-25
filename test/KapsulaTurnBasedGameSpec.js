@@ -116,8 +116,8 @@ describe("KapsulaTurnBasedGame", function() {
             it("returns the FLYING_FROM_RIGHT object coming from the right side (column 31), if generated numbers are ROW and 1", function() {
                 expect( takeTurnManyTimesWithNoInput(1, false) ).toEqual( {state:game.STATE.FLYING_FROM_RIGHT, row:ROW, column:31} );
                 expect( game.state ).toEqual( game.STATE.FLYING_FROM_RIGHT );
-            })
-                        
+            });
+                                    
         });
         
         describe("while in FLYING_FROM_* state, with no user input", function() {
