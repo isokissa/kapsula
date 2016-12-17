@@ -1,6 +1,16 @@
 $(document).ready( function() {
 
 
+    var state = {
+        name: "state",
+        change: function( input ){
+            
+        }
+    }
+
+
+
+
     var myRect = document.getElementById("myRect");
     
     
