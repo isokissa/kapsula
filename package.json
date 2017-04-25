@@ -6,17 +6,22 @@
     "kapsula",
     "game",
     "simple",
-    "browser"
+    "browser",
+    "vintage"
   ],
   "author": "isokissa",
   "license": "(MIT OR Apache-2.0)",
   "repository": "gitlab:alonano/kapsula",
   "scripts": {
-    "test": "jasmine JASMINE_CONFIG_PATH=test/support/jasmine.json"
+    "test": "jasmine JASMINE_CONFIG_PATH=test/support/jasmine.json",
+    "start": "webpack --config webpack.config.js"
   },
   "contributors": [],
-  "dependencies": {},
+  "dependencies": {
+    "hmotine": "^0.0.4"
+  },
   "devDependencies": {
-    "jasmine": "^2.5.1"
+    "jasmine": "^2.5.1",
+    "webpack": "^2.0.0"
   }
 }

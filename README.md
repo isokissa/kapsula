@@ -20,43 +20,4 @@ One of the goals of this project is to prove that it is possible to make a
 fully automatically testable arcade game. The software design allows clear layering of 
 responsibilities. 
 
-The core of the game logic lies in the class `KapsulaStepGame`. It is initialized
-with randomness generator function and has simple interface for playing. There is 
-only one method which accepts user's move and returns the information how the 
-state is changed. There is also interface to retrieve full state, and current 
-score. Class `KapsulaStepGame` takes care of pure game logic, without any notion 
-of time. It can be used to implement also normal board games. 
-
-Class `KapsulaArcadeGame` brings the timing aspect to the game, and takes care
-of performing different animations in order to represent the states of the game. 
-`KapsulaArcadeGame` also extends the state of game objects and introduces different
-transition states, that are fun and interesting to see, but are irrelevant for
-game logic and `KapsulaStepGame`. 
-
-Class `KapsulaGameRenderer` is the class invoked by `KapsulaArcadeGame` and it 
-takes care of representing the arcade game states in HTML, or more precisely in 
-SVG (Scalable Vector Graphics) element of the main HTML page.
-
-### Class KapsulaStepGame
-
-Class `KapsulaStepGame` is a finite state machine. It starts from START state
-in which it will invoke the random number generator to chose the starting 
-position of first kapsula. 
-
-
- 
-
-Gengine - minimal game engine
-----------------------------
-
-### The Testing Aspect 
-
-GameRunner is the only class that has notion of time, and it has also the 
-infinite loop inside, which makes it a bit more interesting to test automatically. 
-In order to test the infinite loop, of course we have to make sure that we can 
-control the exit criteria, which means that the loop actually must not be infinite. 
-We do this by providing a double setTimeout function, which will execute 
-the given function only limited number of times. 
-
-
 
