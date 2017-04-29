@@ -12,6 +12,15 @@
         <link rel="stylesheet" href="css/main.css">
 
         <script src="js/vendor/modernizr-2.8.3.min.js"></script>
+        
+        <script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
+        <script>
+            window.jQuery || document.write('<script src="js/vendor/jquery-3.1.0.min.js"><\/script>');
+        </script>
+        
+        <script src="js/kapsula-bundle.js"></script>
+
+        
     </head>
     <body class="fullwindow">
         <!--[if lt IE 8]>
@@ -19,14 +28,11 @@
         <![endif]-->
         
         <svg id="screen" class="fullwindow" viewBox="0 0 256 192" preserveAspectRatio="xMidYMid meet">
-            <line id="myLine" x1="0" y1="192" x2="256" y2="192" style="stroke:rgb(255,0,0);stroke-width:4" />
-            <polygon id="myRect" points="1,7 1,2 6,2 6,1 2,1 2,4 6,4 6,2 7,2 7,7 6,7 6,5 2,5 2,7" style="fill:rgb(0,0,10);stroke-width:0;"/>
+            <polygon id="platform" points="0,179 7,179 7,183 247,183 247,179 255,179 255,191 0,191"
+                 style="fill:rgb(0,0,0);stroke-width:0"/>
+            <polygon id="kapsula" points="1,7 1,2 6,2 6,1 2,1 2,4 6,4 6,2 7,2 7,7 6,7 6,5 2,5 2,7" 
+                     style="fill:rgb(0,0,10);stroke-width:0;"/>
         </svg>
-
-        <script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
-        <script>window.jQuery || document.write('<script src="js/vendor/jquery-3.1.0.min.js"><\/script>')</script>
-        
-        <script src="js/kapsula-bundle.js"></script>
 
         <script>
           (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
