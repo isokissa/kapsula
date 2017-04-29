@@ -9,15 +9,7 @@ by a magazine for popular science. The game was written for ZX81 with 1KB RAM.
 This project is a reincarnation of the same game, written in JavaScript, as an 
 exercise.  
 
-The project is built and tested in continuous integration and the last 
-version from master branch is automatically deployed to http://kapsula.isokissa.org 
-Go there and play!
-
-Design
-------
-
-One of the goals of this project is to prove that it is possible to make a 
-fully automatically testable arcade game. The software design allows clear layering of 
-responsibilities. 
+The last version from master branch is automatically deployed to 
+http://kapsula.isokissa.org Go there and play!
 
 

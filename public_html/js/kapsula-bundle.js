@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 2);
+/******/ 	return __webpack_require__(__webpack_require__.s = 4);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -94,7 +94,7 @@
  * THE SOFTWARE.
  */
 
-var state = __webpack_require__(1);
+var state = __webpack_require__(3);
 
 var machine = {
     addState: function(name, advanceFn, data, parentName) {
@@ -194,6 +194,55 @@ module.exports = machine;
 /* 1 */
 /***/ (function(module, exports) {
 
+module.exports = {
+    
+    init: function() {
+        var pressed = this.pressed; 
+        $("body").keypress(function(e) {
+            if (e.keyCode === 32) {
+                pressed.state = true; 
+            }
+        });  
+        $("#screen").click(function() {
+            pressed.state = true; 
+        });
+    },
+    
+    pressed: { state: false },
+    
+    consume: function() {
+        console.log("CON");
+        var pressed = this.pressed.state; 
+        this.pressed.state = false;
+        return pressed; 
+    }
+
+};
+
+
+
+/***/ }),
+/* 2 */
+/***/ (function(module, exports) {
+
+
+module.exports = {
+    
+    plot: function(x, y) {
+        $("#kapsula").css({"transform": "translate(" + x * 8 + "px," + y * 8 + "px)"});
+    }
+
+    
+    
+};
+
+
+
+
+/***/ }),
+/* 3 */
+/***/ (function(module, exports) {
+
 /* 
  * The MIT License
  *
@@ -263,40 +312,53 @@ module.exports = baseState;
 
 
 /***/ }),
-/* 2 */
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 $(document).ready( function() {
-
+    
     var machine = __webpack_require__(0);
-    
-    
-    var translate = function(x, y) {
-        $("#myRect").css({"transform": "translate(" + x * 8 + "px," + y * 8 + "px)"});
-    } 
+
+    var render = __webpack_require__(2);
+    var input = __webpack_require__(1);
+    input.init();
     
     machine.addState("ROOT", function() {}, 
         {
             x: 0, 
+            y: 3
         }); 
     machine.addState("TO_RIGHT", function(m) {
         if (m.get("x") < 31) {
-            m.set("x", m.get("x") + 1);
-            translate(m.get("x"),3);
-            return m.keep(200);
+            pressed = input.consume();
+            if (pressed) {
+                return m.goto("LANDING", 30);
+            } else {
+                m.set("x", m.get("x") + 1);
+                render.plot(m.get("x"),m.get("y"));
+                return m.keep(200);
+            }
         } else {
             return m.goto("TO_LEFT", 100);
         }
     }, {}, "ROOT");
     machine.addState("TO_LEFT", function(m) {
         if (m.get("x") > 0) {
-            m.set("x", m.get("x") - 1);
-            translate(m.get("x"),3);
-            return m.keep(170);
+            if (pressed) {
+                return m.goto("LANDING", 30);
+            } else {
+                m.set("x", m.get("x") - 1);
+                render.plot(m.get("x"),m.get("y"));
+                return m.keep(170);
+            }
         } else {
             return m.goto("TO_RIGHT", 500);
         }
     }, {}, "ROOT");
+    machine.addState("LANDING", function(m) {
+        alert("LANDING");
+        return m.end();
+    })
     
     machine.start("TO_RIGHT");
     
