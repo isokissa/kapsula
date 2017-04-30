@@ -203,7 +203,7 @@ module.exports = {
                 pressed.state = true; 
             }
         });  
-        $("#screen").click(function() {
+        $("#screen").on("click touchstart", function() {
             pressed.state = true; 
         });
     },
@@ -211,7 +211,6 @@ module.exports = {
     pressed: { state: false },
     
     consume: function() {
-        console.log("CON");
         var pressed = this.pressed.state; 
         this.pressed.state = false;
         return pressed; 
@@ -225,14 +224,11 @@ module.exports = {
 /* 2 */
 /***/ (function(module, exports) {
 
-
 module.exports = {
     
     plot: function(x, y) {
         $("#kapsula").css({"transform": "translate(" + x * 8 + "px," + y * 8 + "px)"});
     }
-
-    
     
 };
 
@@ -361,7 +357,6 @@ $(document).ready( function() {
     })
     
     machine.start("TO_RIGHT");
-    
     
 });
 

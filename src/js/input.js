@@ -7,7 +7,7 @@ module.exports = {
                 pressed.state = true; 
             }
         });  
-        $("#screen").click(function() {
+        $("#screen").on("click touchstart", function() {
             pressed.state = true; 
         });
     },
@@ -15,7 +15,6 @@ module.exports = {
     pressed: { state: false },
     
     consume: function() {
-        console.log("CON");
         var pressed = this.pressed.state; 
         this.pressed.state = false;
         return pressed; 
