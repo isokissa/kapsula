@@ -89,6 +89,16 @@ textarea {
     color: #ccc;
 }
 
+#crash {
+    position: relative;
+    top: 30%;
+    text-align: center;
+    z-index: 4;
+    font-size: 150%;
+    color: gray;
+    display: none; 
+}
+
 
 /* ==========================================================================
    Media Queries

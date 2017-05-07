@@ -268,6 +268,10 @@ module.exports = {
     result: function(score, remaining) {
         $("#result #score").text(score);
         $("#result #remaining").text(remaining);        
+    },
+    
+    crash: function() {
+        $("#crash").show();
     }
     
 };
@@ -372,6 +376,7 @@ $(document).ready( function() {
     var machine = __webpack_require__(0);
 
     var render = __webpack_require__(2);
+    render.clean();
     var input = __webpack_require__(1);
     input.init();
     
@@ -385,10 +390,15 @@ $(document).ready( function() {
     machine.addState("LEVEL_START", function(m) {
             m.set("remaining", KAPSULAS_PER_LEVEL);
             render.clean();
-            return m.goto("KAPSULA_START", 3000);
+            var landed = [];
+            landed[0] = true; 
+            landed[WIDTH - 1] = true; 
+            m.set("landed", landed);
+            return m.goto("KAPSULA_START", 500);
         },
         {
-            remaining: 0
+            remaining: 0,
+            landed: [],
         },
         "START");
 
@@ -440,9 +450,22 @@ $(document).ready( function() {
             render.plot(m.get("remaining"), m.get("x"), m.get("y"));
             return m.keep(50);
         } else {
-            return m.goto("KAPSULA_START");
+            var landed = m.get("landed");
+            if (!landed[m.get("x")]) {
+                landed[m.get("x")] = true;
+                m.set("landed", landed); 
+                m.set("score", m.get("score") + 1);
+                return m.goto("KAPSULA_START");
+            } else {
+                return m.goto("CRASH");
+            }
         }
     }, {}, "KAPSULA_START");
+    
+    machine.addState("CRASH", function(m) {
+        render.crash();
+        return m.end();
+    });
     
     machine.start("START");
     
