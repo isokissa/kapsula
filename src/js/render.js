@@ -28,6 +28,10 @@ module.exports = {
     result: function(score, remaining) {
         $("#result #score").text(score);
         $("#result #remaining").text(remaining);        
+    },
+    
+    crash: function() {
+        $("#crash").show();
     }
     
 };
