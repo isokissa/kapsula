@@ -7,7 +7,7 @@ module.exports = {
                 pressed.state = true; 
             }
         });  
-        $("#screen").on("click touchstart", function() {
+        $("#screen").on("click", function() {
             pressed.state = true; 
         });
     },
