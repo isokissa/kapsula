@@ -19,6 +19,15 @@ module.exports = {
     
     plot: function(id, x, y) {
         $("#screen #i" + id).css({"transform": "translate(" + x * 8 + "px," + y * 8 + "px)"}).show();
+    },
+    
+    unplot: function(id) {
+        $("#screen #i" + id).hide();        
+    },
+    
+    result: function(score, remaining) {
+        $("#result #score").text(score);
+        $("#result #remaining").text(remaining);        
     }
     
 };

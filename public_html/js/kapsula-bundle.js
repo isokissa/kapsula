@@ -259,6 +259,15 @@ module.exports = {
     
     plot: function(id, x, y) {
         $("#screen #i" + id).css({"transform": "translate(" + x * 8 + "px," + y * 8 + "px)"}).show();
+    },
+    
+    unplot: function(id) {
+        $("#screen #i" + id).hide();        
+    },
+    
+    result: function(score, remaining) {
+        $("#result #score").text(score);
+        $("#result #remaining").text(remaining);        
     }
     
 };
@@ -384,6 +393,7 @@ $(document).ready( function() {
         "START");
 
     machine.addState("KAPSULA_START", function(m) {
+            render.result(m.get("score"), m.get("remaining"));
             if (m.get("remaining") === 0) {
                 return m.goto("LEVEL_END");
             }
@@ -419,7 +429,8 @@ $(document).ready( function() {
                 return m.keep(200);
             }
         } else {
-            return m.goto("KAPSULA_START", 100);
+            render.unplot(m.get("remaining"));
+            return m.goto("KAPSULA_START", 300);
         }
     }, {}, "KAPSULA_START");
 
@@ -433,7 +444,6 @@ $(document).ready( function() {
         }
     }, {}, "KAPSULA_START");
     
-    machine.debugOn();
     machine.start("START");
     
 });

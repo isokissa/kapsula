@@ -72,15 +72,22 @@ textarea {
     background-color: ivory
 }
 
+#result {
+    position: relative;
+    top: 0;
+    left: 50%;
+    z-index: 1;
+}
 
+#result #score {
+    color: darkgray;
+    font-size: 200%;    
+}
 
-
-
-
-
-
-
-
+#result #counter {
+    font-size: 150%;
+    color: #ccc;
+}
 
 
 /* ==========================================================================

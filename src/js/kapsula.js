@@ -28,6 +28,7 @@ $(document).ready( function() {
         "START");
 
     machine.addState("KAPSULA_START", function(m) {
+            render.result(m.get("score"), m.get("remaining"));
             if (m.get("remaining") === 0) {
                 return m.goto("LEVEL_END");
             }
@@ -63,7 +64,8 @@ $(document).ready( function() {
                 return m.keep(200);
             }
         } else {
-            return m.goto("KAPSULA_START", 100);
+            render.unplot(m.get("remaining"));
+            return m.goto("KAPSULA_START", 300);
         }
     }, {}, "KAPSULA_START");
 
@@ -77,7 +79,6 @@ $(document).ready( function() {
         }
     }, {}, "KAPSULA_START");
     
-    machine.debugOn();
     machine.start("START");
     
 });
