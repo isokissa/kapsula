@@ -213,7 +213,8 @@ module.exports = {
     init: function() {
         var pressed = this.pressed; 
         $("body").keypress(function(e) {
-            if (e.keyCode === 32) {
+            var code = e.which || e.keyCode;
+            if (code === 32) {
                 pressed.state = true; 
             }
         });  
@@ -245,6 +246,7 @@ module.exports = {
 
     clean: function() {
         $("#screen .kapsula").remove();
+        $("#crash").hide();
     },
     
     createKapsula: function(id) {        
@@ -263,6 +265,10 @@ module.exports = {
     
     unplot: function(id) {
         $("#screen #i" + id).hide();        
+    },
+    
+    level: function(level) {
+        $("#result #level").text(level);
     },
     
     result: function(score, remaining) {
@@ -372,6 +378,9 @@ $(document).ready( function() {
     const HEIGHT = 24;
     const WIDTH = 32;
     const KAPSULAS_PER_LEVEL = 40;
+    const KAPSULAS_TO_LAND_ON_LEVEL = 10;
+    const INITIAL_FLIGHT_DELAY = 220; 
+    const SPEED_INCREASE_FACTOR = 1.1;
     
     var machine = __webpack_require__(0);
 
@@ -381,15 +390,31 @@ $(document).ready( function() {
     input.init();
     
     machine.addState("START", function(m) {
-            return m.goto("LEVEL_START");
+            return m.goto("GAME_START");
         }, 
         {
-            score: 0 
+            highScore: 0 
         });
+        
+    machine.addState("GAME_START", function(m) {
+            m.set("score", 0);
+            m.set("level", 0);
+            m.set("flightDelay", INITIAL_FLIGHT_DELAY );
+            return m.goto("LEVEL_START");
+        },
+        {
+            score: 0,
+            level: 0,
+            flightDelay: 0
+        }, "START");
 
     machine.addState("LEVEL_START", function(m) {
             m.set("remaining", KAPSULAS_PER_LEVEL);
+            m.set("stillToLand", KAPSULAS_TO_LAND_ON_LEVEL);
             render.clean();
+            m.set("flightDelay", m.get("flightDelay") / SPEED_INCREASE_FACTOR);
+            m.set("level", m.get("level") + 1);
+            render.level(m.get("level"));
             var landed = [];
             landed[0] = true; 
             landed[WIDTH - 1] = true; 
@@ -398,9 +423,10 @@ $(document).ready( function() {
         },
         {
             remaining: 0,
+            stillToLand: 0,
             landed: [],
         },
-        "START");
+        "GAME_START");
 
     machine.addState("KAPSULA_START", function(m) {
             render.result(m.get("score"), m.get("remaining"));
@@ -436,7 +462,7 @@ $(document).ready( function() {
             } else {
                 m.set("x", m.get("x") + m.get("direction"));
                 render.plot(m.get("remaining"), m.get("x"), m.get("y"));
-                return m.keep(200);
+                return m.keep(m.get("flightDelay"));
             }
         } else {
             render.unplot(m.get("remaining"));
@@ -455,6 +481,11 @@ $(document).ready( function() {
                 landed[m.get("x")] = true;
                 m.set("landed", landed); 
                 m.set("score", m.get("score") + 1);
+                m.set("stillToLand", m.get("stillToLand") - 1);
+                if (m.get("stillToLand") === 0) {
+                    m.set("score", m.get("score") + m.get("remaining"));
+                    return m.goto("LEVEL_START", 200);
+                }
                 return m.goto("KAPSULA_START");
             } else {
                 return m.goto("CRASH");
