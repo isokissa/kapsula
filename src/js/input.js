@@ -3,7 +3,8 @@ module.exports = {
     init: function() {
         var pressed = this.pressed; 
         $("body").keypress(function(e) {
-            if (e.keyCode === 32) {
+            var code = e.which || e.keyCode;
+            if (code === 32) {
                 pressed.state = true; 
             }
         });  

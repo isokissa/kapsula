@@ -79,6 +79,11 @@ textarea {
     z-index: 1;
 }
 
+#result #level {
+    font-size: 150%;
+    color: #ccc;
+}
+
 #result #score {
     color: darkgray;
     font-size: 200%;    

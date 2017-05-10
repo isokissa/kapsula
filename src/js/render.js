@@ -5,6 +5,7 @@ module.exports = {
 
     clean: function() {
         $("#screen .kapsula").remove();
+        $("#crash").hide();
     },
     
     createKapsula: function(id) {        
@@ -23,6 +24,10 @@ module.exports = {
     
     unplot: function(id) {
         $("#screen #i" + id).hide();        
+    },
+    
+    level: function(level) {
+        $("#result #level").text(level);
     },
     
     result: function(score, remaining) {
