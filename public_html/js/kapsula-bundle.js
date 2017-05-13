@@ -483,7 +483,7 @@ $(document).ready( function() {
                 m.set("score", m.get("score") + 1);
                 m.set("stillToLand", m.get("stillToLand") - 1);
                 if (m.get("stillToLand") === 0) {
-                    m.set("score", m.get("score") + m.get("remaining"));
+                    m.set("score", m.get("score") + Math.trunc(m.get("remaining")/3));
                     return m.goto("LEVEL_START", 200);
                 }
                 return m.goto("KAPSULA_START");
