@@ -211,24 +211,33 @@ module.exports = machine;
 module.exports = {
     
     init: function() {
-        var pressed = this.pressed; 
-        $("body,div").keypress(function(e) {
+        var stateRef = this.state; 
+        $("body").keypress(function(e) {
             var code = e.which || e.keyCode;
             if (code === 32) {
-                pressed.state = true; 
+                stateRef.land = true; 
+            } else if (code === 13) {
+                stateRef.next = true; 
             }
-        });  
-        $("#screen").on("click", function() {
-            pressed.state = true; 
+        });
+        $("#next").on("click", function() {
+            stateRef.next = true; 
+        });
+        $("#screen,#crash").on("click", function() {
+            stateRef.land = true; 
         });
     },
     
-    pressed: { state: false },
+    state: {},
     
     consume: function() {
-        var pressed = this.pressed.state; 
-        this.pressed.state = false;
-        return pressed; 
+        var state = {
+            land: !!this.state.land,
+            next: !!this.state.next
+        }; 
+        this.state.land = false;
+        this.state.next = false; 
+        return state; 
     }
 
 };
@@ -246,7 +255,8 @@ module.exports = {
 
     clean: function() {
         $("#screen .kapsula").remove();
-        $("#crash").hide();
+        this.crashHide();
+        this.nextHide();
     },
     
     createKapsula: function(id) {        
@@ -286,8 +296,16 @@ module.exports = {
     
     crashHide: function() {
         $("#crash").hide();
-    }
+    }, 
     
+    nextShow: function() {
+        $("#next").show();
+    }, 
+
+    nextHide: function() {
+        $("#next").hide();
+    }
+
 };
 
 
@@ -386,9 +404,10 @@ $(document).ready( function() {
     const HEIGHT = 24;
     const WIDTH = 32;
     const KAPSULAS_PER_LEVEL = 40;
-    const KAPSULAS_TO_LAND_ON_LEVEL = 10;
+    const KAPSULAS_TO_LAND_ON_LEVEL = 30;
+    const MIN_KAPSULAS_TO_LAND_ON_LEVEL = 10; 
     const INITIAL_FLIGHT_DELAY = 220; 
-    const SPEED_INCREASE_FACTOR = 1.1;
+    const SPEED_INCREASE_FACTOR = 1.15;
     
     var machine = __webpack_require__(0);
 
@@ -437,8 +456,11 @@ $(document).ready( function() {
 
     machine.addState("KAPSULA_START", function(m) {
         render.result(m.get("score"), m.get("remaining"));
+        if (KAPSULAS_TO_LAND_ON_LEVEL - m.get("stillToLand") >= MIN_KAPSULAS_TO_LAND_ON_LEVEL) {
+            render.nextShow();
+        }
         if (m.get("remaining") === 0) {
-            return m.goto("LEVEL_END");
+            return m.goto("CRASH");
         }
         if (Math.random() - 0.5 < 0) {
             m.set("direction", -1);
@@ -464,7 +486,10 @@ $(document).ready( function() {
     machine.addState("FLY", function(m) {
         if (m.get("x") !== m.get("limit")) {
             var pressed = input.consume();
-            if (pressed) {
+            if (pressed.next && 
+                (KAPSULAS_TO_LAND_ON_LEVEL - m.get("stillToLand") >= MIN_KAPSULAS_TO_LAND_ON_LEVEL)) {
+                return m.goto("LEVEL_START", 100);
+            } else if (pressed.land) {
                 return m.goto("LANDING", 30);
             } else {
                 m.set("x", m.get("x") + m.get("direction"));
@@ -490,7 +515,7 @@ $(document).ready( function() {
                 m.set("score", m.get("score") + 1);
                 m.set("stillToLand", m.get("stillToLand") - 1);
                 if (m.get("stillToLand") === 0) {
-                    m.set("score", m.get("score") + Math.trunc(m.get("remaining")/5));
+                    m.set("score", m.get("score") + Math.trunc(m.get("remaining")/2));
                     return m.goto("LEVEL_START", 200);
                 }
                 return m.goto("KAPSULA_START");
@@ -511,7 +536,7 @@ $(document).ready( function() {
     
     machine.addState("END", function(m) {
         var pressed = input.consume();
-        if (!pressed) {
+        if (!pressed.land) {
             return m.keep(100);
         } else {
             render.crashHide();

@@ -5,7 +5,8 @@ module.exports = {
 
     clean: function() {
         $("#screen .kapsula").remove();
-        $("#crash").hide();
+        this.crashHide();
+        this.nextHide();
     },
     
     createKapsula: function(id) {        
@@ -45,8 +46,16 @@ module.exports = {
     
     crashHide: function() {
         $("#crash").hide();
-    }
+    }, 
     
+    nextShow: function() {
+        $("#next").show();
+    }, 
+
+    nextHide: function() {
+        $("#next").hide();
+    }
+
 };
 
 

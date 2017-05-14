@@ -1,24 +1,33 @@
 module.exports = {
     
     init: function() {
-        var pressed = this.pressed; 
-        $("body,div").keypress(function(e) {
+        var stateRef = this.state; 
+        $("body").keypress(function(e) {
             var code = e.which || e.keyCode;
             if (code === 32) {
-                pressed.state = true; 
+                stateRef.land = true; 
+            } else if (code === 13) {
+                stateRef.next = true; 
             }
-        });  
-        $("#screen").on("click", function() {
-            pressed.state = true; 
+        });
+        $("#next").on("click", function() {
+            stateRef.next = true; 
+        });
+        $("#screen,#crash").on("click", function() {
+            stateRef.land = true; 
         });
     },
     
-    pressed: { state: false },
+    state: {},
     
     consume: function() {
-        var pressed = this.pressed.state; 
-        this.pressed.state = false;
-        return pressed; 
+        var state = {
+            land: !!this.state.land,
+            next: !!this.state.next
+        }; 
+        this.state.land = false;
+        this.state.next = false; 
+        return state; 
     }
 
 };
