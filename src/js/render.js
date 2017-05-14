@@ -35,8 +35,16 @@ module.exports = {
         $("#result #remaining").text(remaining);        
     },
     
-    crash: function() {
+    highScore: function(highScore) {
+        $("#result #highScore").text("HI: " + highScore);
+    },
+    
+    crashShow: function() {
         $("#crash").show();
+    }, 
+    
+    crashHide: function() {
+        $("#crash").hide();
     }
     
 };
