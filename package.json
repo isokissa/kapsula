@@ -18,7 +18,7 @@
   },
   "contributors": [],
   "dependencies": {
-    "hmotine": "^0.0.4"
+    "hmotine": "^1.0.0"
   },
   "devDependencies": {
     "jasmine": "^2.5.1",
