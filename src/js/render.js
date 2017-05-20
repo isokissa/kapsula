@@ -54,7 +54,15 @@ module.exports = {
 
     nextHide: function() {
         $("#next").hide();
-    }
+    }, 
+    
+    instructionsShow: function() {
+        $("#instructions").show();        
+    },
+
+    instructionsHide: function() {
+        $("#instructions").hide();        
+    },
 
 };
 
