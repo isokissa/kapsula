@@ -16,10 +16,21 @@ $(document).ready( function() {
     input.init();
     
     machine.addState("START", function(m) {
-        return m.goto("GAME_START");
+        return m.goto("INSTRUCTIONS", 500);
     }, 
     {
         highScore: 0 
+    });
+
+    machine.addState("INSTRUCTIONS", function(m) {
+        render.instructionsShow();
+        var pressed = input.consume();
+        if (!pressed.land) {
+            return m.keep(100);
+        } else {
+            render.instructionsHide();
+            return m.goto("GAME_START",200);
+        }
     });
         
     machine.addState("GAME_START", function(m) {
