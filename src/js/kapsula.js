@@ -8,6 +8,8 @@ $(document).ready( function() {
     const INITIAL_FLIGHT_DELAY = 220; 
     const SPEED_INCREASE_FACTOR = 1.15;
     
+    var docCookies = require("./cookies.js");
+    
     var machine = require("hmotine");
 
     var render = require("./render.js");
@@ -16,6 +18,9 @@ $(document).ready( function() {
     input.init();
     
     machine.addState("START", function(m) {
+        var highScore = docCookies.getItem("highScore"); 
+        console.log("HIGH: " + highScore);
+        m.set("highScore", highScore ? highScore : 0);
         return m.goto("INSTRUCTIONS", 500);
     }, 
     {
@@ -37,6 +42,7 @@ $(document).ready( function() {
         m.set("score", 0);
         m.set("level", 0);
         m.set("flightDelay", INITIAL_FLIGHT_DELAY );
+        render.highScore(m.get("highScore"));
         return m.goto("LEVEL_START");
     },
     {
@@ -138,7 +144,7 @@ $(document).ready( function() {
     machine.addState("CRASH", function(m) {
         if (m.get("score") > m.get("highScore")) {
             m.set("highScore", m.get("score"));
-            render.highScore(m.get("highScore"));
+            docCookies.setItem("highScore", m.get("highScore"));
         }
         render.crashShow();
         return m.goto("END",2000);
