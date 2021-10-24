@@ -1,3 +1,6 @@
+The (more) active repository is at GitLab https://gitlab.com/alonano/kapsula
+
+
 Kapsula
 =======
 
